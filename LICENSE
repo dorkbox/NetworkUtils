@@ -1,0 +1,119 @@
+ - NetworkUtils - Provides various utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)
+   [The Apache Software License, Version 2.0]
+   https://git.dorkbox.com/dorkbox/NetworkUtils
+   Copyright 2020
+     Dorkbox LLC
+
+   Extra license information
+     - Netty - 
+       [The Apache Software License, Version 2.0]
+       https://netty.io/
+       Copyright 2014
+         The Netty Project
+       This product contains a modified portion of Netty Network Utils
+
+     - Apache Harmony - 
+       [The Apache Software License, Version 2.0]
+       http://archive.apache.org/dist/harmony/
+       Copyright 2010
+         The Apache Software Foundation
+       This product contains a modified portion of 'Apache Harmony', an open source Java SE
+
+     - Kotlin - 
+       [The Apache Software License, Version 2.0]
+       https://github.com/JetBrains/kotlin
+       Copyright 2020
+         JetBrains s.r.o. and Kotlin Programming Language contributors
+       Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
+       See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
+
+     - kotlin-logging - Lightweight logging framework for Kotlin
+       [The Apache Software License, Version 2.0]
+       https://github.com/MicroUtils/kotlin-logging
+       Copyright 2020
+         Ohad Shai
+
+     - SLF4J - Simple facade or abstraction for various logging frameworks
+       [MIT License]
+       http://www.slf4j.org
+       Copyright 2019
+         QOS.ch
+
+     - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 11+
+       [The Apache Software License, Version 2.0]
+       https://git.dorkbox.com/dorkbox/Executor
+       Copyright 2020
+         Dorkbox LLC
+
+       Extra license information
+         - ZT Process Executor - 
+           [The Apache Software License, Version 2.0]
+           https://github.com/zeroturnaround/zt-exec
+           Copyright 2014
+             ZeroTurnaround LLC
+
+         - Apache Commons Exec - 
+           [The Apache Software License, Version 2.0]
+           https://commons.apache.org/proper/commons-exec/
+           Copyright 2014
+             The Apache Software Foundation
+
+         - Kotlin - 
+           [The Apache Software License, Version 2.0]
+           https://github.com/JetBrains/kotlin
+           Copyright 2020
+             JetBrains s.r.o. and Kotlin Programming Language contributors
+           Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
+           See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
+
+         - kotlinx.coroutines - Library support for Kotlin coroutines with multiplatform support
+           [The Apache Software License, Version 2.0]
+           https://github.com/Kotlin/kotlinx.coroutines
+           Copyright 2020
+             JetBrains s.r.o.
+
+         - kotlin-logging - Lightweight logging framework for Kotlin
+           [The Apache Software License, Version 2.0]
+           https://github.com/MicroUtils/kotlin-logging
+           Copyright 2020
+             Ohad Shai
+
+         - SLF4J - Simple facade or abstraction for various logging frameworks
+           [MIT License]
+           http://www.slf4j.org
+           Copyright 2019
+             QOS.ch
+
+         - SSHJ - SSHv2 library for Java
+           [The Apache Software License, Version 2.0]
+           https://github.com/hierynomus/sshj
+           Copyright 2020
+             Jeroen van Erp
+             SSHJ Contributors
+
+           Extra license information
+             - Apache MINA - 
+               [The Apache Software License, Version 2.0]
+               https://mina.apache.org/sshd-project/
+                 The Apache Software Foundation
+
+             - Apache Commons-Net - 
+               [The Apache Software License, Version 2.0]
+               https://commons.apache.org/proper/commons-net/
+                 The Apache Software Foundation
+
+             - JZlib - 
+               [The Apache Software License, Version 2.0]
+               http://www.jcraft.com/jzlib
+                 Atsuhiko Yamanaka
+                 JCraft, Inc.
+
+             - Bouncy Castle Crypto - 
+               [The Apache Software License, Version 2.0]
+               http://www.bouncycastle.org
+                 The Legion of the Bouncy Castle Inc
+
+             - ed25519-java - 
+               [Public Domain, per Creative Commons CC0]
+               https://github.com/str4d/ed25519-java
+                 https://github.com/str4d
