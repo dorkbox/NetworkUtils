@@ -746,4 +746,19 @@ class NetUtilTest {
         assertTrue("", IPv4.isInRange(IPv4.toInt("192.168.42.14"), IPv4.toInt("192.168.0.0"), 16))
         assertTrue("", IPv4.isInRange(IPv4.toInt("192.168.0.0"), IPv4.toInt("192.168.0.0"), 16))
     }
+
+
+    @Test
+    fun testCidr() {
+        assertTrue("", IPv4.isValidCidr("10.10.10.5/0"))
+        assertTrue("", IPv4.isValidCidr("10.10.10.5/24"))
+        assertTrue("", IPv4.isValidCidr("10.10.10.5/32"))
+        assertFalse("", IPv4.isValidCidr("10.10.10.5/33"))
+        assertFalse("", IPv4.isValidCidr("10.10.10.5/-1"))
+    }
+
+    @Test
+    fun testToString() {
+        assertEquals("10.10.10.5", IPv4.toString(IPv4.toInt("10.10.10.5")))
+    }
 }
