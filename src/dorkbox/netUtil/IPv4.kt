@@ -136,6 +136,7 @@ object IPv4 {
             return false
         }
 
+        @Suppress("NAME_SHADOWING")
         var from = from
         var i = ip.indexOf('.', from)
 
@@ -165,7 +166,7 @@ object IPv4 {
     private fun isValidIpV4Word(word: CharSequence, from: Int, toExclusive: Int): Boolean {
         val len = toExclusive - from
         var c0 = ' '
-        var c1 = ' '
+        var c1: Char
         var c2 = ' '
 
         if (len < 1 || len > 3 || word[from].also { c0 = it } < '0') {
@@ -193,7 +194,7 @@ object IPv4 {
             return null
         }
 
-        var i = 0
+        var i: Int
         return byteArrayOf(
                 ipv4WordToByte(ip, 0, ip.indexOf('.', 1).also { i = it }),
                 ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
@@ -203,7 +204,7 @@ object IPv4 {
     }
 
     fun toBytes(ip: String): ByteArray {
-        var i = 0
+        var i: Int
         return byteArrayOf(
                 ipv4WordToByte(ip, 0, ip.indexOf('.', 1).also { i = it }),
                 ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
@@ -591,13 +592,13 @@ object IPv4 {
 
     fun toString(ipBytes: ByteArray): String {
         val buf = StringBuilder(15)
-        buf.append(ipBytes[0].toUByte())
+        buf.append(ipBytes[0].toInt() and 0xFF)
         buf.append('.')
-        buf.append(ipBytes[1].toUByte())
+        buf.append(ipBytes[1].toInt() and 0xFF)
         buf.append('.')
-        buf.append(ipBytes[2].toUByte())
+        buf.append(ipBytes[2].toInt() and 0xFF)
         buf.append('.')
-        buf.append(ipBytes[3].toUByte())
+        buf.append(ipBytes[3].toInt() and 0xFF)
         return buf.toString()
     }
 
