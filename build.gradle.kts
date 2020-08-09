@@ -23,6 +23,10 @@ import java.time.Instant
 ////// RELEASE : (to sonatype/maven central), <'publish and release' - 'publishToSonatypeAndRelease'>
 ///////////////////////////////
 
+gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS   // always show the stacktrace!
+gradle.startParameter.warningMode = WarningMode.All
+
+
 plugins {
     java
 
@@ -150,4 +154,28 @@ dependencies {
     testImplementation("junit:junit:4.13")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
     testImplementation("com.dorkbox:Utilities:1.6")
+}
+
+publishToSonatype {
+    groupId = Extras.group
+    artifactId = Extras.id
+    version = Extras.version
+
+    name = Extras.name
+    description = Extras.description
+    url = Extras.url
+
+    vendor = Extras.vendor
+    vendorUrl = Extras.vendorUrl
+
+    issueManagement {
+        url = "${Extras.url}/issues"
+        nickname = "Gitea Issues"
+    }
+
+    developer {
+        id = "dorkbox"
+        name = Extras.vendor
+        email = "email@dorkbox.com"
+    }
 }
