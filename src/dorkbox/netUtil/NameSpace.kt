@@ -8,6 +8,17 @@ import java.util.*
  *
  */
 object NameSpace {
+    object Route {
+        fun flush(nameSpace: String) {
+            if (Common.OS_LINUX) {
+                run(nameSpace, "/sbin/ip", "route", "flush", "cache")
+            }
+            else {
+                throw RuntimeException("NOT IMPL.")
+            }
+        }
+    }
+
     private val nameSpaceToIifToIp: MutableMap<String, MutableMap<String, String>> = HashMap()
 
     fun add(nameSpace: String) {

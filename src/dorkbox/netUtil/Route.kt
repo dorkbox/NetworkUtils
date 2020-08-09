@@ -6,12 +6,8 @@ import dorkbox.executor.Executor
  *
  */
 object Route {
-    fun flush(nameSpace: String) {
-        if (Common.OS_LINUX) {
-            NameSpace.run(nameSpace, "/sbin/ip route flush cache")
-        } else {
-            throw RuntimeException("NOT IMPL.")
-        }
+    fun flush() {
+        Executor.run("/sbin/ip", "route", "flush", "cache")
     }
 
     fun add(targetIpAndCidr: String, hostIP: String, hostInterface: String) {
