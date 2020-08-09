@@ -1,7 +1,7 @@
 NetworkUtils
 ============
 
-###### [![Dorkbox](https://badge.dorkbox.com/dorkbox.svg "Dorkbox")](https://git.dorkbox.com/dorkbox/ObjectPool) [![Github](https://badge.dorkbox.com/github.svg "Github")](https://github.com/dorkbox/ObjectPool) [![Gitlab](https://badge.dorkbox.com/gitlab.svg "Gitlab")](https://gitlab.com/dorkbox/ObjectPool) [![Bitbucket](https://badge.dorkbox.com/bitbucket.svg "Bitbucket")](https://bitbucket.org/dorkbox/ObjectPool)
+###### [![Dorkbox](https://badge.dorkbox.com/dorkbox.svg "Dorkbox")](https://git.dorkbox.com/dorkbox/NetworkUtils) [![Github](https://badge.dorkbox.com/github.svg "Github")](https://github.com/dorkbox/NetworkUtils) [![Gitlab](https://badge.dorkbox.com/gitlab.svg "Gitlab")](https://gitlab.com/dorkbox/NetworkUtils)
 
 Provides various Network Utilities, for IP/MAC address conversion, PING (without having to be root or with proper permissions) and managing various linux network properties
 
@@ -21,7 +21,7 @@ Maven Info
     <dependency>
       <groupId>com.dorkbox</groupId>
       <artifactId>NetworkUtils</artifactId>
-      <version>0.1</version>
+      <version>1.0</version>
     </dependency>
 </dependencies>
 ```
@@ -31,7 +31,7 @@ Gradle Info
 ````
 dependencies {
     ...
-    compile 'com.dorkbox:NetworkUtils:0.1'
+    compile 'com.dorkbox:NetworkUtils:1.0'
 }
 ````
 
