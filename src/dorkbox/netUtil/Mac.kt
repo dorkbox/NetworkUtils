@@ -300,6 +300,10 @@ object Mac {
         return BigInteger(s, 16).toByteArray()
     }
 
+    fun toLong(mac: String): Long {
+        return toLong(mac, MacDelimiter.COLON)
+    }
+
     fun toLong(mac: ByteArray): Long {
         return ((mac[5].toLong() and 0xff)
                 + (mac[4].toLong() and 0xff shl 8)
