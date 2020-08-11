@@ -26,24 +26,24 @@ class Ping {
             .command("ping")
 
         if (Common.OS_WINDOWS) {
-            ping.addCommand("-n")
-            ping.addCommand("$count")
+            ping.addArg("-n")
+            ping.addArg("$count")
         }
         else {
-            ping.addCommand("-q")
-            ping.addCommand("-c $count")
+            ping.addArg("-q")
+            ping.addArg("-c $count")
         }
 
         if (waitTime != null) {
             when {
                 Common.OS_MAC -> {
-                    ping.addCommand("-W " + waitTime.toMillis())
+                    ping.addArg("-W " + waitTime.toMillis())
                 }
                 Common.OS_WINDOWS -> {
-                    ping.addCommand("-w " + waitTime.toMillis())
+                    ping.addArg("-w " + waitTime.toMillis())
                 }
                 else -> {
-                    ping.addCommand("-W " + waitTime.seconds)
+                    ping.addArg("-W " + waitTime.seconds)
                 }
             }
         }
@@ -51,13 +51,13 @@ class Ping {
         if (deadline != null) {
             when {
                 Common.OS_MAC -> {
-                    ping.addCommand("-t " + deadline.seconds)
+                    ping.addArg("-t " + deadline.seconds)
                 }
                 Common.OS_WINDOWS -> {
                     logger.info("Deadline is not supported on Windows")
                 }
                 else -> {
-                    ping.addCommand("-w " + deadline.seconds)
+                    ping.addArg("-w " + deadline.seconds)
                 }
             }
         }
@@ -65,20 +65,20 @@ class Ping {
         if (ttl != null) {
             when {
                 Common.OS_MAC -> {
-                    ping.addCommand("-m $ttl")
+                    ping.addArg("-m $ttl")
                 }
                 Common.OS_WINDOWS -> {
-                    ping.addCommand("-i $ttl")
+                    ping.addArg("-i $ttl")
                 }
                 else -> {
-                    ping.addCommand("-t $ttl")
+                    ping.addArg("-t $ttl")
                 }
             }
         }
-        ping.command("ping $host")
+//        ping.command("ping $host")
 
         // wait for it to finish running
-        val output: String = ping.readOutput().startAsShellBlocking().output.utf8()
+        val output: String = ping.enableRead().startAsShellBlocking().output.utf8()
         return PingResultBuilder.fromOutput(output)
     }
 }
