@@ -87,6 +87,35 @@ object IPv4 {
     private val SLASH_REGEX = "\\.".toRegex()
 
 
+    private val private10 = toInt("10.0.0.0")
+    private val private172 = toInt("172.16.0.0")
+    private val private192 = toInt("192.168.0.0")
+
+    /**
+     * Determines if this IP address is a private address or not.
+     *
+     * Private addresses are defined as
+     *  10.0.0.0/8
+     *  172.16.0.0/12
+     *  192.168.0.0/16
+     */
+    fun isPrivate(ipAsString: String): Boolean {
+        return isPrivate(toInt(ipAsString))
+    }
+
+    /**
+     * Determines if this IP address is a private address or not.
+     *
+     * Private addresses are defined as
+     *  10.0.0.0/8
+     *  172.16.0.0/12
+     *  192.168.0.0/16
+     */
+    fun isPrivate(ipAsInt: Int): Boolean {
+        // check from smaller to larger
+        return isInRange(ipAsInt, private192, 16) || isInRange(ipAsInt, private172, 12) || isInRange(ipAsInt, private10, 8)
+    }
+
     /**
      * Determine whether a given string is a valid CIDR IP address. Accepts only 1.2.3.4/24
      *
