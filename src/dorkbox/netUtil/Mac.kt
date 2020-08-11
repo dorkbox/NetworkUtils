@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dorkbox.netUtil
 
 import dorkbox.executor.Executor
@@ -15,7 +17,11 @@ import java.util.regex.Pattern
  */
 object Mac {
     enum class MacDelimiter(val delimiter: String) {
-        COLON(":"), PERIOD("."), SPACE(" ");
+        COLON(":"),
+        PERIOD("."),
+        SPACE(" ");
+
+        val regex = delimiter.toRegex()
     }
 
     private const val MAC_ADDRESS_LENGTH = 6
@@ -52,7 +58,8 @@ object Mac {
         } catch (e: Exception) {
             if (logger != null) {
                 logger.error("Unable to get MAC address for IP '{}'", ip, e)
-            } else {
+            }
+            else {
                 e.printStackTrace()
             }
         }
@@ -81,7 +88,8 @@ object Mac {
         } catch (e: Exception) {
             if (logger != null) {
                 logger.error("Unable to get MAC address for IP '{}'", ip, e)
-            } else {
+            }
+            else {
                 e.printStackTrace()
             }
         }
@@ -108,83 +116,109 @@ object Mac {
     }
 
     /**
-     * will also make sure that this mac doesn't already exist
-     *
-     * @return a unique MAC that can be used for VPN devices + setup. This is a LOWERCASE string!
+     * Removes a mac that was in use, to free it's use later on
      */
-    val fakeMac: String
-        get() {
-            synchronized(fakeMacsInUse) {
-                var mac = fakeVpnMacUnsafe
-
-                // gotta make sure it doesn't already exist
-                while (fakeMacsInUse.contains(mac)) {
-                    mac = fakeVpnMacUnsafe
-                }
-
-                fakeMacsInUse.add(mac)
-                return mac
+    fun freeFakeMac(fakeMacs: Iterable<String>) {
+        synchronized(fakeMacsInUse) {
+            fakeMacs.forEach {
+                fakeMacsInUse.remove(it)
             }
         }
+    }
 
     /**
      * will also make sure that this mac doesn't already exist
      *
      * @return a unique MAC that can be used for VPN devices + setup. This is a LOWERCASE string!
      */
-    val fakeDockerMac: String
-        get() {
-            synchronized(fakeMacsInUse) {
-                var mac = fakeDockerMacUnsafe
+    fun fakeMac(): String {
+        synchronized(fakeMacsInUse) {
+            var mac = fakeVpnMacUnsafe()
 
-                // gotta make sure it doesn't already exist
-                while (fakeMacsInUse.contains(mac)) {
-                    mac = fakeDockerMacUnsafe
-                }
-                fakeMacsInUse.add(mac)
-
-                return mac
+            // gotta make sure it doesn't already exist
+            while (fakeMacsInUse.contains(mac)) {
+                mac = fakeVpnMacUnsafe()
             }
+
+            fakeMacsInUse.add(mac)
+            return mac
         }
+    }
+
+    /**
+     * will also make sure that this mac doesn't already exist
+     *
+     * @return a unique MAC that can be used for VPN devices + setup. This is a LOWERCASE string!
+     */
+    fun fakeDockerMac(): String {
+        synchronized(fakeMacsInUse) {
+            var mac = fakeDockerMacUnsafe()
+
+            // gotta make sure it doesn't already exist
+            while (fakeMacsInUse.contains(mac)) {
+                mac = fakeDockerMacUnsafe()
+            }
+            fakeMacsInUse.add(mac)
+
+            return mac
+        }
+    }
 
     /**
      * http://serverfault.com/questions/40712/what-range-of-mac-addresses-can-i-safely-use-for-my-virtual-machines
      *
      * @return a mac that is safe to use for fake interfaces. THIS IS LOWERCASE!
      */
-    val fakeVpnMacUnsafe: String
-        get() {
-            var vpnID = randHex
-            while (vpnID == "d0") {
-                // this is what is used for docker. NEVER assign it to a VPN mac!!
-                vpnID = randHex
-            }
+    fun fakeVpnMac(): String {
+        var mac = fakeVpnMacUnsafe()
 
-            return "02:$vpnID:$randHex:$randHex:$randHex:$randHex"
+        synchronized(fakeMacsInUse) {
+            // gotta make sure it doesn't already exist
+            while (fakeMacsInUse.contains(mac)) {
+                mac = fakeVpnMacUnsafe()
+            }
+            fakeMacsInUse.add(mac)
         }
+
+        return mac
+    }
 
     /**
      * http://serverfault.com/questions/40712/what-range-of-mac-addresses-can-i-safely-use-for-my-virtual-machines
      *
      * @return a mac that is safe to use for fake interfaces. THIS IS LOWERCASE!
      */
-    val fakeDockerMacUnsafe: String
-        get() {
-            return "02:d0:$randHex:$randHex:$randHex:$randHex"
+    fun fakeVpnMacUnsafe(): String {
+        var vpnID = randHex
+        while (vpnID == "d0") {
+            // this is what is used for docker. NEVER assign it to a VPN mac!!
+            vpnID = randHex
         }
+
+        return "02:$vpnID:$randHex:$randHex:$randHex:$randHex"
+    }
+
+    /**
+     * http://serverfault.com/questions/40712/what-range-of-mac-addresses-can-i-safely-use-for-my-virtual-machines
+     *
+     * @return a mac that is safe to use for fake interfaces. THIS IS LOWERCASE!
+     */
+    fun fakeDockerMacUnsafe(): String {
+        return "02:d0:$randHex:$randHex:$randHex:$randHex"
+    }
 
     /**
      * will also make sure that this mac doesn't already exist
      *
      * @return a unique MAC that can be used for VPN devices + setup
      */
-    fun getFakeVpnMac(vpnKeyDirForExistingVpnMacs: String): String {
+    fun fakeVpnMacWithDir(vpnKeyDirForExistingVpnMacs: String): String {
         synchronized(fakeMacsInUse) {
-            var mac = fakeVpnMacUnsafe
+            var mac = fakeVpnMacUnsafe()
 
             // gotta make sure it doesn't already exist
             while (fakeMacsInUse.contains(mac) || File(vpnKeyDirForExistingVpnMacs, "$mac.crt").exists()) {
-                mac = fakeVpnMacUnsafe
+                mac = fakeVpnMacUnsafe()
             }
 
             fakeMacsInUse.add(mac)
@@ -198,7 +232,8 @@ object Mac {
 
             return if (i < 16) {
                 "0" + Integer.toHexString(i)
-            } else {
+            }
+            else {
                 Integer.toHexString(i)
             }
         }
@@ -215,14 +250,14 @@ object Mac {
         (0..8).forEach { index ->
             val byte = macBytes[index]
             if (buf.isNotEmpty()) {
-                buf.append(':');
+                buf.append(':')
             }
 
             if (byte in 0..15) {
-                buf.append('0');
+                buf.append('0')
             }
 
-            buf.append(Integer.toHexString(byte.toUByte().toInt()))
+            buf.append(Integer.toHexString(byte.toInt() and 0xFF))
         }
 
         return buf.toString()
@@ -234,21 +269,21 @@ object Mac {
         val macBytes = toBytes(mac)
 
         // mac should have 6 bytes.
-        var bytesWritten = 0;
+        var bytesWritten = 0
         (0..8).forEach { index ->
             val byte = macBytes[index]
 
             if (bytesWritten != 0) {
-                writer.write(":");
-                bytesWritten++;
+                writer.write(":")
+                bytesWritten++
             }
 
             if (byte in 0..15) {
-                writer.append('0');
+                writer.append('0')
             }
 
-            writer.write(Integer.toHexString(byte.toUByte().toInt()))
-            bytesWritten += 2;
+            writer.write(Integer.toHexString(byte.toInt() and 0xFF))
+            bytesWritten += 2
         }
     }
 
@@ -290,7 +325,8 @@ object Mac {
                 buf.append('0')
             }
 
-            buf.append(Integer.toHexString(b.toUByte().toInt()).toUpperCase())
+            buf.append(Integer.toHexString(b.toInt() and 0xFF)
+                           .toUpperCase())
         }
         return buf.toString()
     }
@@ -300,17 +336,17 @@ object Mac {
         return BigInteger(s, 16).toByteArray()
     }
 
+
+    fun toLongSafe(macAsString: String): Long {
+        return toLong(macAsString, getMacDelimiter(macAsString))
+    }
+
     fun toLong(mac: String): Long {
         return toLong(mac, MacDelimiter.COLON)
     }
 
     fun toLong(mac: ByteArray): Long {
-        return ((mac[5].toLong() and 0xff)
-                + (mac[4].toLong() and 0xff shl 8)
-                + (mac[3].toLong() and 0xff shl 16)
-                + (mac[2].toLong() and 0xff shl 24)
-                + (mac[1].toLong() and 0xff shl 32)
-                + (mac[0].toLong() and 0xff shl 40))
+        return ((mac[5].toLong() and 0xff) + (mac[4].toLong() and 0xff shl 8) + (mac[3].toLong() and 0xff shl 16) + (mac[2].toLong() and 0xff shl 24) + (mac[1].toLong() and 0xff shl 32) + (mac[0].toLong() and 0xff shl 40))
     }
 
     fun toLong(mac: String, delimiter: MacDelimiter? = MacDelimiter.COLON): Long {
@@ -319,8 +355,9 @@ object Mac {
             val elements: Array<String?>
 
             if (delimiter != null) {
-                elements = mac.split(delimiter.delimiter.toRegex()).toTypedArray()
-            } else {
+                elements = mac.split(delimiter.regex).toTypedArray()
+            }
+            else {
                 elements = arrayOfNulls(MAC_ADDRESS_LENGTH)
                 var index = 0
                 var substringPos = 0
@@ -333,7 +370,8 @@ object Mac {
 
             for (i in 0 until MAC_ADDRESS_LENGTH) {
                 val element = elements[i]
-                addressInBytes[i] = element!!.toInt(16).toByte()
+                addressInBytes[i] = element!!.toInt(16)
+                    .toByte()
             }
         } catch (e: Exception) {
             Common.logger.error("Error parsing MAC address '{}'", mac, e)
@@ -350,7 +388,8 @@ object Mac {
         // Check whether mac is separated by a colon, period, space, or nothing at all.
         // Must standardize to a colon.
         var normalizedMac: String = macAsString
-        if (normalizedMac.split(COLON_REGEX).toTypedArray().size != 6) {
+        if (normalizedMac.split(COLON_REGEX)
+                    .toTypedArray().size != 6) {
 
             // Does not already use colons, must modify the mac to use colons.
             when {
@@ -374,7 +413,8 @@ object Mac {
                         // Reconstruct the string, adding colons.
                         normalizedMac = if (index != MAC_ADDRESS_LENGTH - 1) {
                             normalizedMac + macAsString.substring(substringPos, substringPos + 2) + ":"
-                        } else {
+                        }
+                        else {
                             normalizedMac + macAsString.substring(substringPos, substringPos + 2)
                         }
 
@@ -389,29 +429,29 @@ object Mac {
     }
 
     /**
-     * Returns the type of delmiter based on how a mac address is constructed. Returns null if no delimiter.
+     * Returns the type of delmiter based on how a mac address is constructed. Returns ":" if no delimiter could be detected.
+     *
      * @return a MacDelimiter if there is one, or null if the mac address is one long string.
      */
     fun getMacDelimiter(macAsString: String): MacDelimiter? {
-        when {
+        return when {
             macAsString.contains(":") -> {
-                return MacDelimiter.COLON
+                MacDelimiter.COLON
             }
             macAsString.contains(".") -> {
-                return MacDelimiter.PERIOD
+                MacDelimiter.PERIOD
             }
             macAsString.contains(" ") -> {
-                return MacDelimiter.SPACE
+                MacDelimiter.SPACE
             }
-            else -> return null
+            else -> MacDelimiter.COLON
         }
     }
-
     fun assign(interfaceName: String, macAddress: String) {
         if (Common.OS_LINUX) {
-             Executor.run("/sbin/ifconfig", interfaceName, "hw", "ether", macAddress);
-            throw RuntimeException("NOT IMPL.")
-        } else {
+            Executor.run("/sbin/ifconfig", interfaceName, "hw", "ether", macAddress)
+        }
+        else {
             throw RuntimeException("NOT IMPL.")
         }
     }
