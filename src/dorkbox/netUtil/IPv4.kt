@@ -90,6 +90,7 @@ object IPv4 {
     private val private10 = toInt("10.0.0.0")
     private val private172 = toInt("172.16.0.0")
     private val private192 = toInt("192.168.0.0")
+    private val loopback172 = toInt("127.0.0.0")
 
     /**
      * Determines if this IP address is a private address or not.
@@ -114,6 +115,22 @@ object IPv4 {
     fun isPrivate(ipAsInt: Int): Boolean {
         // check from smaller to larger
         return isInRange(ipAsInt, private192, 16) || isInRange(ipAsInt, private172, 12) || isInRange(ipAsInt, private10, 8)
+    }
+
+    /**
+     * A loopback address is defined as
+     *  127.0.0.0/8
+     */
+    fun isLoopback(ipAsString: String): Boolean {
+        return isInRange(toInt(ipAsString), loopback172, 8)
+    }
+
+    /**
+     * A loopback address is defined as
+     *  127.0.0.0/8
+     */
+    fun isLoopback(ipAsInt: Int): Boolean {
+        return isInRange(ipAsInt, loopback172, 8)
     }
 
     /**

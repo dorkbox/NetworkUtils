@@ -250,8 +250,6 @@ object IPv6 {
         } catch (e: UnknownHostException) {
             throw RuntimeException(e) // Should never happen
         }
-
-//        return NetUtil.getByName(ip, ipv4Mapped)
     }
 
     /**
@@ -687,5 +685,37 @@ object IPv6 {
      */
     private fun inRangeEndExclusive(value: Int, start: Int, end: Int): Boolean {
         return value >= start && value < end
+    }
+
+
+    /**
+     * IPv6 address reserved for loopback use is 0000:0000:0000:0000:0000:0000:0000:0001/128.
+     *
+     * This loopback address is so lengthy and can be further simplified as ::1/128, or just ::1
+     *
+     * /128 means EXACTLY this address
+     */
+    fun isLoopback(ipAsString: String): Boolean {
+        var oneCount = 0
+        // can only be with one "1", and nothing else
+        ipAsString.forEach { char ->
+            when (char) {
+                ':' -> {
+                    // this is always ok
+                }
+                '1' -> {
+                    oneCount++
+                    if (oneCount > 1) {
+                        return false
+                    }
+                }
+                else -> {
+                    // not OK
+                    return false
+                }
+            }
+        }
+
+        return oneCount == 1
     }
 }
