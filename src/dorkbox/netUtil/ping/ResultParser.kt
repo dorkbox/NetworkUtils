@@ -5,13 +5,13 @@ import java.util.regex.Pattern
 
 class ResultParser(private val pattern: Pattern, private val reader: (PingResult, Matcher) -> PingResult) {
     fun fill(result: PingResult, output: String): PingResult {
-        var result = result
+        var r = result
         val matcher = pattern.matcher(output)
         while (matcher.find()) {
-            result = reader(result, matcher)
+            r = reader(r, matcher)
         }
 
-        return result
+        return r
     }
 
     companion object {

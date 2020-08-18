@@ -80,7 +80,7 @@ internal object PingResultBuilder {
                             val host: String = matcher.group(2)
                             val icmpSeq: Int = matcher.group(3).toInt()
                             val ttl: Int = matcher.group(4).toInt()
-                            val time = Duration.ofNanos((1000 * 1000 * matcher.group(5).toDouble()) as Long)
+                            val time = Duration.ofNanos(1000 * 1000 * matcher.group(5).toLong())
                             val response = PingResult.Response(bytes, host, icmpSeq, ttl, time)
 
                             result.responses.add(response)
