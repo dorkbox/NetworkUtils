@@ -564,7 +564,7 @@ object IPv4 {
             }
 
             val x = ln(end - start + 1.toDouble()) / ln(2.0)
-            val maxDiff = (32 - floor(x)).toByte()
+            val maxDiff = (32 - floor(x)).toInt().toByte()
             if (maxsize < maxDiff) {
                 maxsize = maxDiff
             }
