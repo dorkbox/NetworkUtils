@@ -24,7 +24,7 @@ object VirtualEth {
 
     fun assignNameSpace(nameSpace: String, guest: String) {
         if (Common.OS_LINUX) {
-            Executor().command("/sbin/ip", "link", "set", "guest", "netns", nameSpace).startBlocking()
+            Executor().command("/sbin/ip", "link", "set", guest, "netns", nameSpace).startBlocking()
         } else {
             throw RuntimeException("NOT IMPL.")
         }
