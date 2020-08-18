@@ -30,13 +30,13 @@ gradle.startParameter.warningMode = WarningMode.All
 plugins {
     java
 
-    id("com.dorkbox.GradleUtils") version "1.9"
+    id("com.dorkbox.GradleUtils") version "1.10"
     id("com.dorkbox.Licensing") version "2.2"
     id("com.dorkbox.VersionUpdate") version "2.0"
-    id("com.dorkbox.GradlePublish") version "1.4"
+    id("com.dorkbox.GradlePublish") version "1.6"
     id("com.dorkbox.GradleModuleInfo") version "1.0"
 
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
 }
 
 object Extras {
@@ -143,13 +143,11 @@ tasks.jar.get().apply {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-
     // https://github.com/MicroUtils/kotlin-logging
-    implementation("io.github.microutils:kotlin-logging:1.7.9")  // slick kotlin wrapper for slf4j
-    implementation("org.slf4j:slf4j-api:1.7.25")
+    implementation("io.github.microutils:kotlin-logging:1.8.3")  // slick kotlin wrapper for slf4j
+    implementation("org.slf4j:slf4j-api:1.7.30")
     
-    implementation("com.dorkbox:Executor:1.0")
+    implementation("com.dorkbox:Executor:1.1")
 
     testImplementation("junit:junit:4.13")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
