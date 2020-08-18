@@ -7,18 +7,17 @@ import java.io.File
  *
  */
 object Dhcp {
-
-    fun start(nameSpace: String, id: String, interfaceName: String) {
+    fun start(id: String, interfaceName: String) {
         if (Common.OS_LINUX) {
-            stop(nameSpace, id, interfaceName)
+            stop(id, interfaceName)
             val dhcpPidFile = "/var/run/dhclient-$id.pid"
-            Executor().command("/sbin/dhclient", "-pf", dhcpPidFile, interfaceName).startBlocking();
+            Executor().command("/sbin/dhclient", "-pf", dhcpPidFile, interfaceName).startBlocking()
         } else {
             throw RuntimeException("NOT IMPL.")
         }
     }
 
-    fun stop(nameSpace: String, id: String, interfaceName: String) {
+    fun stop(id: String, interfaceName: String) {
         if (Common.OS_LINUX) {
             val dhcpPidFile = "/var/run/dhclient-$id.pid"
 

@@ -19,6 +19,39 @@ object NameSpace {
         }
     }
 
+    object Dhcp {
+        object Dhcp {
+            fun start(nameSpace: String, id: String, interfaceName: String) {
+                if (Common.OS_LINUX) {
+                    stop(nameSpace, id, interfaceName)
+                    val dhcpPidFile = "/var/run/dhclient-$id.pid"
+                    run(nameSpace, "/sbin/dhclient", "-pf", dhcpPidFile, interfaceName)
+                } else {
+                    throw RuntimeException("NOT IMPL.")
+                }
+            }
+
+            fun stop(nameSpace: String, id: String, interfaceName: String) {
+                if (Common.OS_LINUX) {
+                    val dhcpPidFile = "/var/run/dhclient-$id.pid"
+
+                    // close the dhclient if it was already running (based on pid file), and delete the pid file
+                    run(nameSpace, "/sbin/dhclient", "-r -pf", dhcpPidFile, interfaceName)
+
+                    // short break
+                    try {
+                        Thread.sleep(500)
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                    }
+                    File(dhcpPidFile).delete()
+                } else {
+                    throw RuntimeException("NOT IMPL.")
+                }
+            }
+        }
+    }
+
     private val nameSpaceToIifToIp: MutableMap<String, MutableMap<String, String>> = HashMap()
 
     fun add(nameSpace: String) {
