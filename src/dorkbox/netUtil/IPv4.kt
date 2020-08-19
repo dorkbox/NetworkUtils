@@ -241,22 +241,28 @@ object IPv4 {
         }
 
         var i: Int
-        return byteArrayOf(
-                ipv4WordToByte(ip, 0, ip.indexOf('.', 1).also { i = it }),
-                ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
-                ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
-                ipv4WordToByte(ip, i + 1, ip.length)
-        )
+        return byteArrayOf(ipv4WordToByte(ip, 0, ip.indexOf('.', 1).also { i = it }),
+                           ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
+                           ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
+                           ipv4WordToByte(ip, i + 1, ip.length))
     }
 
     fun toBytes(ip: String): ByteArray {
         var i: Int
-        return byteArrayOf(
-                ipv4WordToByte(ip, 0, ip.indexOf('.', 1).also { i = it }),
-                ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
-                ipv4WordToByte(ip, i + 1, ip.indexOf('.', i + 2).also { i = it }),
-                ipv4WordToByte(ip, i + 1, ip.length)
-        )
+
+        var index = ip.indexOf('.', 1)
+        val a = ipv4WordToByte(ip, 0, index)
+        i = index
+
+        index = ip.indexOf('.', index + 2)
+        val b = ipv4WordToByte(ip, i + 1, index)
+        i = index
+
+        index = ip.indexOf('.', index + 2)
+        val c = ipv4WordToByte(ip, i + 1, index)
+        i = index
+
+        return byteArrayOf(a, b, c, ipv4WordToByte(ip, i + 1, ip.length))
     }
 
     private fun decimalDigit(str: CharSequence, pos: Int): Int {
@@ -416,15 +422,15 @@ object IPv4 {
             12 -> "255.240.0.0"
             11 -> "255.224.0.0"
             10 -> "255.192.0.0"
-            9  -> "255.128.0.0"
-            8  -> "255.0.0.0"
-            7  -> "254.0.0.0"
-            6  -> "252.0.0.0"
-            5  -> "248.0.0.0"
-            4  -> "240.0.0.0"
-            3  -> "224.0.0.0"
-            2  -> "192.0.0.0"
-            1  -> "128.0.0.0"
+            9 -> "255.128.0.0"
+            8 -> "255.0.0.0"
+            7 -> "254.0.0.0"
+            6 -> "252.0.0.0"
+            5 -> "248.0.0.0"
+            4 -> "240.0.0.0"
+            3 -> "224.0.0.0"
+            2 -> "192.0.0.0"
+            1 -> "128.0.0.0"
             else -> "0.0.0.0"
         }
     }
@@ -460,15 +466,15 @@ object IPv4 {
             12 -> -1048576
             11 -> -2097152
             10 -> -4194304
-            9  -> -8388608
-            8  -> -16777216
-            7  -> -33554432
-            6  -> -67108864
-            5  -> -134217728
-            4  -> -268435456
-            3  -> -536870912
-            2  -> -1073741824
-            1  -> -2147483648
+            9 -> -8388608
+            8 -> -16777216
+            7 -> -33554432
+            6 -> -67108864
+            5 -> -134217728
+            4 -> -268435456
+            3 -> -536870912
+            2 -> -1073741824
+            1 -> -2147483648
             else -> 0
         }
     }
@@ -511,40 +517,39 @@ object IPv4 {
         }
     }
 
-    private val CIDR2MASK = intArrayOf(
-            0x00000000,
-            -0x80000000,
-            -0x40000000,
-            -0x20000000,
-            -0x10000000,
-            -0x8000000,
-            -0x4000000,
-            -0x2000000,
-            -0x1000000,
-            -0x800000,
-            -0x400000,
-            -0x200000,
-            -0x100000,
-            -0x80000,
-            -0x40000,
-            -0x20000,
-            -0x10000,
-            -0x8000,
-            -0x4000,
-            -0x2000,
-            -0x1000,
-            -0x800,
-            -0x400,
-            -0x200,
-            -0x100,
-            -0x80,
-            -0x40,
-            -0x20,
-            -0x10,
-            -0x8,
-            -0x4,
-            -0x2,
-            -0x1)
+    private val CIDR2MASK = intArrayOf(0x00000000,
+                                       -0x80000000,
+                                       -0x40000000,
+                                       -0x20000000,
+                                       -0x10000000,
+                                       -0x8000000,
+                                       -0x4000000,
+                                       -0x2000000,
+                                       -0x1000000,
+                                       -0x800000,
+                                       -0x400000,
+                                       -0x200000,
+                                       -0x100000,
+                                       -0x80000,
+                                       -0x40000,
+                                       -0x20000,
+                                       -0x10000,
+                                       -0x8000,
+                                       -0x4000,
+                                       -0x2000,
+                                       -0x1000,
+                                       -0x800,
+                                       -0x400,
+                                       -0x200,
+                                       -0x100,
+                                       -0x80,
+                                       -0x40,
+                                       -0x20,
+                                       -0x10,
+                                       -0x8,
+                                       -0x4,
+                                       -0x2,
+                                       -0x1)
 
     fun range2Cidr(startIp: String, endIp: String): List<String> {
         var start = toInt(startIp).toLong()
@@ -630,7 +635,7 @@ object IPv4 {
         buf.append('.')
         buf.append(ipAddress shr 16 and 0xFF)
         buf.append('.')
-        buf.append(ipAddress shr 8 and 0xF)
+        buf.append(ipAddress shr 8 and 0xFF)
         buf.append('.')
         buf.append(ipAddress and 0xFF)
         return buf.toString()
@@ -662,48 +667,52 @@ object IPv4 {
 
     @Throws(Exception::class)
     fun writeString(ipAddress: Int, writer: Writer) {
-        writer.write((ipAddress shr 24 and 0x000000FF).toString())
+        writer.write((ipAddress shr 24 and 0xFF).toString())
         writer.write('.'.toInt())
-        writer.write((ipAddress shr 16 and 0x000000FF).toString())
+        writer.write((ipAddress shr 16 and 0xFF).toString())
         writer.write('.'.toInt())
-        writer.write((ipAddress shr 8 and 0x000000FF).toString())
+        writer.write((ipAddress shr 8 and 0xFF).toString())
         writer.write('.'.toInt())
-        writer.write((ipAddress and 0x000000FF).toString())
+        writer.write((ipAddress and 0xFF).toString())
     }
 
     fun toString(ipAddress: Long): String {
         val ipString = StringBuilder(15)
-        ipString.append(ipAddress shr 24 and 0x000000FF)
+        ipString.append(ipAddress shr 24 and 0xFF)
         ipString.append('.')
-        ipString.append(ipAddress shr 16 and 0x000000FF)
+        ipString.append(ipAddress shr 16 and 0xFF)
         ipString.append('.')
-        ipString.append(ipAddress shr 8 and 0x000000FF)
+        ipString.append(ipAddress shr 8 and 0xFF)
         ipString.append('.')
-        ipString.append(ipAddress and 0x000000FF)
+        ipString.append(ipAddress and 0xFF)
         return ipString.toString()
     }
 
     fun toBytes(bytes: Int): ByteArray {
-        return byteArrayOf((bytes ushr 24 and 0xFF).toByte(),
-                           (bytes ushr 16 and 0xFF).toByte(),
-                           (bytes ushr 8 and 0xFF).toByte(),
+        return byteArrayOf((bytes shr 24 and 0xFF).toByte(),
+                           (bytes shr 16 and 0xFF).toByte(),
+                           (bytes shr 8 and 0xFF).toByte(),
                            (bytes and 0xFF).toByte())
     }
 
     fun toInt(ipAsString: String): Int {
         return if (isValid(ipAsString)) {
-            val bytes = toBytes(ipAsString)
-
-            var address = 0
-            address = address or (bytes[0].toInt() shl 24)
-            address = address or (bytes[1].toInt() shl 16)
-            address = address or (bytes[2].toInt() shl 8)
-            address = address or bytes[3].toInt()
-
-            address
+            toIntUnsafe(ipAsString)
         } else {
             0
         }
+    }
+
+    fun toIntUnsafe(ipAsString: String): Int {
+        val bytes = toBytes(ipAsString)
+
+        var address = 0
+        for (element in bytes) {
+            address = address shl 8
+            address = address or (element.toInt() and 0xff)
+        }
+
+        return address
     }
 
     /**

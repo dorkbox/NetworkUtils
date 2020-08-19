@@ -17,7 +17,9 @@ package dorkbox.netUtil
 
 import dorkbox.util.Sys
 import org.junit.Assert
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.net.Inet6Address
 import java.net.InetAddress
@@ -27,7 +29,7 @@ import java.net.UnknownHostException
 class NetUtilTest {
     companion object {
         private val validIpV4Hosts = mapOf(
-                "192.168.1.0" to "c0a80100",
+//                "192.168.1.0" to "c0a80100",
                 "10.255.255.254" to "0afffffe",
                 "172.18.5.4" to "ac120504",
                 "0.0.0.0" to "00000000",
@@ -731,6 +733,17 @@ class NetUtilTest {
 //        println(Ping().run())
 ////        println(Executor().command("ping 1.1.1.1").readOutput().startAsShellBlocking().output.utf8())
 //    }
+
+
+    @Test
+    fun testIntStringCycle() {
+        for (host in validIpV4Hosts.keys) {
+            println(host)
+            val ip = IPv4.toIntUnsafe(host)
+            val ipString = IPv4.toString(ip)
+            Assert.assertEquals(host, ipString)
+        }
+    }
 
     @Test
     fun testIp4Range() {
