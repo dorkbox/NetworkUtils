@@ -37,6 +37,7 @@ import kotlin.math.pow
  * [Inet6Util class]
  * (http://svn.apache.org/repos/asf/harmony/enhanced/java/branches/java6/classlib/modules/luni/src/main/java/org/apache/harmony/luni/util/Inet6Util.java) which was part of Apache Harmony.
  */
+@Suppress("EXPERIMENTAL_API_USAGE")
 object IPv4 {
     /**
      * Returns `true` if IPv4 should be used even if the system supports both IPv4 and IPv6. Setting this
@@ -592,7 +593,21 @@ object IPv4 {
      *
      * @return true if it is in range
      */
-    @ExperimentalUnsignedTypes
+    fun isInRange(address: String, networkAddress: String, networkPrefix: Int): Boolean {
+        return isInRange(toInt(address), toInt(networkAddress), networkPrefix)
+    }
+
+    /**
+     * Check if the IP address is in the range of a specific IP/CIDR
+     *
+     * a prefix of 0 will ALWAYS return true
+     *
+     * @param address the address to check
+     * @param networkAddress the network address that will have the other address checked against
+     * @param networkPrefix 0-32 the network prefix (subnet) to use for the network address
+     *
+     * @return true if it is in range
+     */
     fun isInRange(address: Int, networkAddress: Int, networkPrefix: Int): Boolean {
         // System.err.println(" ip: " + IP.toString(address));
         // System.err.println(" networkAddress: " + IP.toString(networkAddress));
