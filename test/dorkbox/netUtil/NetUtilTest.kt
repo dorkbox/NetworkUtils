@@ -746,6 +746,11 @@ class NetUtilTest {
     }
 
     @Test
+    fun testMac() {
+        assertEquals("12:12:12:12:12:12", Mac.toStringLowerCase(Mac.toLong("12:12:12:12:12:12")))
+    }
+
+    @Test
     fun testIsPrivate() {
         assertTrue(IPv4.isPrivate("192.168.23.102"))
         assertTrue(IPv4.isPrivate("10.10.234.102"))
@@ -755,27 +760,27 @@ class NetUtilTest {
 
     @Test
     fun testIp4Range() {
-        assertTrue("", IPv4.isInRange(IPv4.toInt("10.10.10.5"), IPv4.toInt("10.10.10.10"), 24))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("10.0.0.5"),  IPv4.toInt("10.10.10.10"), 8))
-        assertFalse("", IPv4.isInRange(IPv4.toInt("11.0.0.5"), IPv4.toInt("10.10.10.10"), 8))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("11.0.0.5"),  IPv4.toInt("10.10.10.10"), 1))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("11.0.0.5"),  IPv4.toInt("10.10.10.10"), 0))
-        assertFalse("", IPv4.isInRange(IPv4.toInt("11.0.0.5"), IPv4.toInt("10.10.10.10"), 32))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("10.10.10.10"), IPv4.toInt("10.10.10.10"), 32))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("10.10.10.10"), IPv4.toInt("10.10.10.10"), 31))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("10.10.10.10"), IPv4.toInt("10.10.10.10"), 30))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("192.168.42.14"), IPv4.toInt("192.168.0.0"), 16))
-        assertTrue("", IPv4.isInRange(IPv4.toInt("192.168.0.0"), IPv4.toInt("192.168.0.0"), 16))
+        assertTrue(IPv4.isInRange("10.10.10.5", "10.10.10.10", 24))
+        assertTrue(IPv4.isInRange("10.0.0.5",  "10.10.10.10", 8))
+        assertFalse(IPv4.isInRange("11.0.0.5", "10.10.10.10", 8))
+        assertTrue(IPv4.isInRange("11.0.0.5",  "10.10.10.10", 1))
+        assertTrue(IPv4.isInRange("11.0.0.5",  "10.10.10.10", 0))
+        assertFalse(IPv4.isInRange("11.0.0.5", "10.10.10.10", 32))
+        assertTrue(IPv4.isInRange("10.10.10.10", "10.10.10.10", 32))
+        assertTrue(IPv4.isInRange("10.10.10.10", "10.10.10.10", 31))
+        assertTrue(IPv4.isInRange("10.10.10.10", "10.10.10.10", 30))
+        assertTrue(IPv4.isInRange("192.168.42.14", "192.168.0.0", 16))
+        assertTrue(IPv4.isInRange("192.168.0.0", "192.168.0.0", 16))
     }
 
 
     @Test
     fun testCidr() {
-        assertTrue("", IPv4.isValidCidr("10.10.10.5/0"))
-        assertTrue("", IPv4.isValidCidr("10.10.10.5/24"))
-        assertTrue("", IPv4.isValidCidr("10.10.10.5/32"))
-        assertFalse("", IPv4.isValidCidr("10.10.10.5/33"))
-        assertFalse("", IPv4.isValidCidr("10.10.10.5/-1"))
+        assertTrue(IPv4.isValidCidr("10.10.10.5/0"))
+        assertTrue(IPv4.isValidCidr("10.10.10.5/24"))
+        assertTrue(IPv4.isValidCidr("10.10.10.5/32"))
+        assertFalse(IPv4.isValidCidr("10.10.10.5/33"))
+        assertFalse(IPv4.isValidCidr("10.10.10.5/-1"))
     }
 
     @Test

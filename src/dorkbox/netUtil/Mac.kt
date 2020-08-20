@@ -242,12 +242,13 @@ object Mac {
      * Converts a long into a properly formatted lower-case string
      */
     fun toStringLowerCase(mac: Long): String {
-        // we only use the right-most 6 bytes (of 8 bytes).
         val macBytes = toBytes(mac)
 
-        // mac should have 6 bytes.
+        // mac should have AT LEAST bytes.
         val buf = StringBuilder()
-        (0..8).forEach { index ->
+
+        // we only use the right-most 6 bytes (of 8 bytes).
+        (2..7).forEach { index ->
             val byte = macBytes[index]
             if (buf.isNotEmpty()) {
                 buf.append(':')
@@ -257,7 +258,7 @@ object Mac {
                 buf.append('0')
             }
 
-            buf.append(Integer.toHexString(byte.toInt() and 0xFF))
+            buf.append(Integer.toHexString(byte.toUByte().toInt()))
         }
 
         return buf.toString()
@@ -268,9 +269,9 @@ object Mac {
         // we only use the right-most 6 bytes.
         val macBytes = toBytes(mac)
 
-        // mac should have 6 bytes.
+        // we only use the right-most 6 bytes (of 8 bytes).
         var bytesWritten = 0
-        (0..8).forEach { index ->
+        (2..7).forEach { index ->
             val byte = macBytes[index]
 
             if (bytesWritten != 0) {
@@ -346,7 +347,12 @@ object Mac {
     }
 
     fun toLong(mac: ByteArray): Long {
-        return ((mac[5].toLong() and 0xff) + (mac[4].toLong() and 0xff shl 8) + (mac[3].toLong() and 0xff shl 16) + (mac[2].toLong() and 0xff shl 24) + (mac[1].toLong() and 0xff shl 32) + (mac[0].toLong() and 0xff shl 40))
+        return ((mac[5].toLong() and 0xff) +
+                (mac[4].toLong() and 0xff shl 8) +
+                (mac[3].toLong() and 0xff shl 16) +
+                (mac[2].toLong() and 0xff shl 24) +
+                (mac[1].toLong() and 0xff shl 32) +
+                (mac[0].toLong() and 0xff shl 40))
     }
 
     fun toLong(mac: String, delimiter: MacDelimiter? = MacDelimiter.COLON): Long {
@@ -370,8 +376,7 @@ object Mac {
 
             for (i in 0 until MAC_ADDRESS_LENGTH) {
                 val element = elements[i]
-                addressInBytes[i] = element!!.toInt(16)
-                    .toByte()
+                addressInBytes[i] = element!!.toInt(16).toByte()
             }
         } catch (e: Exception) {
             Common.logger.error("Error parsing MAC address '{}'", mac, e)
