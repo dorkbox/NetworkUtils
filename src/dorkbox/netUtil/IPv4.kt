@@ -581,10 +581,6 @@ object IPv4 {
         return pairs
     }
 
-
-    /* Mask to convert unsigned int to a long (i.e. keep 32 bits) */
-    private const val UNSIGNED_INT_MASK = 0x0FFFFFFFFL
-
     /**
      * Check if the IP address is in the range of a specific IP/CIDR
      *
@@ -596,6 +592,7 @@ object IPv4 {
      *
      * @return true if it is in range
      */
+    @ExperimentalUnsignedTypes
     fun isInRange(address: Int, networkAddress: Int, networkPrefix: Int): Boolean {
         // System.err.println(" ip: " + IP.toString(address));
         // System.err.println(" networkAddress: " + IP.toString(networkAddress));
@@ -607,15 +604,15 @@ object IPv4 {
         val netmask = ((1 shl 32 - networkPrefix) - 1).inv()
 
         // Calculate base network address
-        val network = (networkAddress and netmask and UNSIGNED_INT_MASK.toInt()).toLong()
-        // System.err.println("   network " + IP.toString(network));
+        val network = (networkAddress and netmask).toUInt()
+//        System.err.println("   network " + IPv4.toString(network.toInt()))
 
         //  Calculate broadcast address
-        val broadcast = network or netmask.inv().toLong() and UNSIGNED_INT_MASK
-        // System.err.println("   broadcast " + IP.toString(broadcast));
+        val broadcast = network or netmask.inv().toUInt()
+//        System.err.println("   broadcast " + IPv4.toString(broadcast.toInt()))
 
-        val addressLong = (address and UNSIGNED_INT_MASK.toInt()).toLong()
-        return addressLong in network..broadcast
+//        val addressLong = (address.toLong() and UNSIGNED_INT_MASK)
+        return address.toUInt() in network..broadcast
     }
 
 

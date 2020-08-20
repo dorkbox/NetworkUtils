@@ -746,6 +746,14 @@ class NetUtilTest {
     }
 
     @Test
+    fun testIsPrivate() {
+        assertTrue(IPv4.isPrivate("192.168.23.102"))
+        assertTrue(IPv4.isPrivate("10.10.234.102"))
+        assertTrue(IPv4.isPrivate("172.16.45.13"))
+        assertFalse(IPv4.isPrivate("72.66.83.240"))
+    }
+
+    @Test
     fun testIp4Range() {
         assertTrue("", IPv4.isInRange(IPv4.toInt("10.10.10.5"), IPv4.toInt("10.10.10.10"), 24))
         assertTrue("", IPv4.isInRange(IPv4.toInt("10.0.0.5"),  IPv4.toInt("10.10.10.10"), 8))
