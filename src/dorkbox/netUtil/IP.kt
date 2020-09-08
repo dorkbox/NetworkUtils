@@ -30,11 +30,6 @@ object IP {
      */
     val LOOPBACK_IF: NetworkInterface
 
-    /**
-     * The loopback address
-     */
-    const val LOOPBACK = "127.0.0.1"
-
     init {
         logger.trace {
             "-Djava.net.preferIPv4Stack: ${IPv4.isPreferred}"
