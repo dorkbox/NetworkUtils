@@ -42,7 +42,7 @@ internal object Common {
     }
 
 
-    internal val logger = KotlinLogging.logger(Common::class.java.simpleName)
+    internal val logger = KotlinLogging.logger("NetworkUtils")
 
     fun getBoolean(property: String, defaultValue: Boolean): Boolean {
         var value: String = System.getProperty(property, defaultValue.toString()) ?: return defaultValue
