@@ -197,7 +197,7 @@ object IP {
      */
     fun toString(ip: InetAddress, ipv4Mapped: Boolean = false): String {
         if (ip is Inet4Address) {
-            return ip.getHostAddress()
+            return IPv4.toString(ip)
         }
 
         require(ip is Inet6Address) { "Unhandled type: $ip" }
@@ -207,7 +207,6 @@ object IP {
 
     /**
      * Returns the [String] representation of an [InetSocketAddress].
-     *
      *
      * The output does not include Scope ID.
      * @param addr [InetSocketAddress] to be converted to an address string
