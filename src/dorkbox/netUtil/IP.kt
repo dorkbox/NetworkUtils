@@ -36,8 +36,10 @@ object IP {
     const val LOOPBACK = "127.0.0.1"
 
     init {
-        logger.debug {
-            "-Djava.net.preferIPv4Stack: ${IPv4.isPreferred}\n" +
+        logger.trace {
+            "-Djava.net.preferIPv4Stack: ${IPv4.isPreferred}"
+        }
+        logger.trace {
             "-Djava.net.preferIPv6Addresses: ${IPv6.isPreferred}"
         }
 
@@ -103,7 +105,7 @@ object IP {
 
         if (loopbackIface != null) {
             // Found the loopback interface with an INET address.
-            logger.debug {
+            logger.trace {
                 "Loopback interface: ${loopbackIface.name} (${loopbackIface.displayName}, ${loopbackAddr!!.hostAddress})"
             }
         } else {
