@@ -51,9 +51,16 @@ object IPv4 {
      * The [Inet4Address] that represents the IPv4 loopback address '127.0.0.1'
      */
     val LOCALHOST: Inet4Address by lazy {
-        // Create IPv4 loopback address.
-        // this will ALWAYS work
+        // Create IPv4 address, this will ALWAYS work
         InetAddress.getByAddress("localhost", byteArrayOf(127, 0, 0, 1)) as Inet4Address
+    }
+
+    /**
+     * The [Inet4Address] that represents the IPv4 wildcard address '0.0.0.0'
+     */
+    val WILDCARD: Inet4Address by lazy {
+        // Create IPv4 address, this will ALWAYS work
+        InetAddress.getByAddress("", byteArrayOf(0, 0, 0, 0)) as Inet4Address
     }
 
     /**
@@ -62,17 +69,17 @@ object IPv4 {
      *
      * What this does is open a connection to 1.1.1.1 and see get the interface this traffic was on, and use that interface IP address
      */
-    val WILDCARD: String by lazy {
+    val WILDCARD_SAFE: Inet4Address by lazy {
         if (Common.OS_WINDOWS) {
             // silly windows can't work with 0.0.0.0, BUT we can't use loopback because we might need to reach this machine from a different host
             // what we do is open a connection to 1.1.1.1 and see what interface this happened on, and this is used as the accessible
             // interface
-            var ip = "127.0.0.1"
+            var ip = WILDCARD
 
             runCatching {
                 Socket().use {
                     it.connect(InetSocketAddress("1.1.1.1", 80))
-                    ip = it.localAddress.hostAddress
+                    ip = it.localAddress as Inet4Address
                 }
             }.onFailure {
                 Common.logger.error("Unable to determine outbound traffic local address. Using loopback instead.", it)
@@ -81,7 +88,7 @@ object IPv4 {
             ip
         } else {
             // everyone else works correctly
-            "0.0.0.0"
+            WILDCARD
         }
     }
 
@@ -672,8 +679,8 @@ object IPv4 {
      *
      * @return `String` containing the text-formatted IP address
      */
-    fun toString(ip: InetAddress): String {
-        return (ip as Inet4Address).hostAddress
+    fun toString(ip: Inet4Address): String {
+        return ip.hostAddress
     }
 
 

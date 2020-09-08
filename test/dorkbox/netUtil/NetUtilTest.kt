@@ -681,7 +681,7 @@ class NetUtilTest {
     @Throws(UnknownHostException::class)
     fun testIp6AddressToString() {
         for ((key, value) in ipv6ToAddressStrings) {
-            assertEquals(value, IPv6.toString(InetAddress.getByAddress(key)))
+            assertEquals(value, IP.toString(InetAddress.getByAddress(key)))
         }
     }
 
@@ -689,7 +689,7 @@ class NetUtilTest {
     @Throws(UnknownHostException::class)
     fun testIp4AddressToString() {
         for ((key, value) in validIpV4Hosts) {
-            assertEquals(key, IPv4.toString(InetAddress.getByAddress(unhex(value))))
+            assertEquals(key, IP.toString(InetAddress.getByAddress(unhex(value))))
         }
     }
 

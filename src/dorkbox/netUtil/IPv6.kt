@@ -17,6 +17,7 @@
 
 package dorkbox.netUtil
 
+import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
 import java.net.UnknownHostException
@@ -85,9 +86,16 @@ object IPv6 {
      * The [Inet6Address] that represents the IPv6 loopback address '::1'
      */
     val LOCALHOST: Inet6Address by lazy {
-        // Create IPv6 loopback address.
-        // should never fail
+        // Create IPv6 address, this will ALWAYS work
         InetAddress.getByAddress("localhost", byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)) as Inet6Address
+    }
+
+    /**
+     * The [Inet4Address] that represents the IPv4 wildcard address '0.0.0.0'
+     */
+    val WILDCARD: Inet6Address by lazy {
+        // Create IPv6 address, this will ALWAYS work
+        InetAddress.getByAddress("", byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) as Inet6Address
     }
 
     /**
@@ -568,7 +576,7 @@ object IPv6 {
      *
      * @return `String` containing the text-formatted IP address
      */
-    fun toString(ip: InetAddress, ipv4Mapped: Boolean = false): String {
+    fun toString(ip: Inet6Address, ipv4Mapped: Boolean = false): String {
         return toAddressString(ip.address, 0, ipv4Mapped)
     }
 

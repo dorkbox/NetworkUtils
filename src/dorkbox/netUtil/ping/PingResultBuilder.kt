@@ -58,7 +58,7 @@ internal object PingResultBuilder {
                     listOf(
                         /* Windows */
                         ResultParser.of("Pinging (.*) with") { result, matcher ->
-                            result.host = IPv4.WILDCARD // note: this is REALLY the host used for default traffic
+                            result.host = IPv4.WILDCARD_SAFE.hostAddress // note: this is REALLY the host used for default traffic
                             result.ip = matcher.group(1)
                             result
                         },
