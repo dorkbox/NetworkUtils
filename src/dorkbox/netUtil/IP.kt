@@ -1,7 +1,12 @@
 package dorkbox.netUtil
 
 import dorkbox.netUtil.Common.logger
-import java.net.*
+import java.net.Inet4Address
+import java.net.Inet6Address
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.NetworkInterface
+import java.net.SocketException
 
 /**
  * A class that holds a number of network-related constants, also from:
@@ -213,7 +218,7 @@ object IP {
         val sb: StringBuilder
 
         sb = if (addr.isUnresolved) {
-            val hostname = getHostname(addr)
+            val hostname = addr.hostString
             newSocketAddressStringBuilder(hostname, port, !IPv6.isValid(hostname))
         } else {
             val address = addr.address
@@ -257,19 +262,9 @@ object IP {
      */
     fun getByName(ip: String): InetAddress? {
         return if (IPv4.isValid(ip)) {
-            IPv4.getByName(ip)
+            IPv4.getByNameUnsafe(ip)
         } else {
             IPv6.getByName(ip)
         }
-    }
-
-    /**
-     * Returns [InetSocketAddress.getHostString] if Java >= 7,
-     * or [InetSocketAddress.getHostName] otherwise.
-     * @param addr The address
-     * @return the host string
-     */
-    fun getHostname(addr: InetSocketAddress): String {
-        return addr.hostString
     }
 }

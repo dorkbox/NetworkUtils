@@ -735,10 +735,22 @@ object IPv4 {
      * @param ip [String] IP address to be converted to a [Inet4Address]
      * @return [Inet4Address] representation of the `ip` or `null` if not a valid IP address.
      */
+    fun getByNameUnsafe(ip: String): Inet4Address {
+        val asBytes = toBytes(ip)
+        return Inet4Address.getByAddress(ip, asBytes) as Inet4Address
+    }
+
+    /**
+     * Returns the [Inet4Address] representation of a [String] IP address.
+     *
+     * This method will treat all IPv4 type addresses as "IPv4 mapped" (see [.getByName])
+     *
+     * @param ip [String] IP address to be converted to a [Inet4Address]
+     * @return [Inet4Address] representation of the `ip` or `null` if not a valid IP address.
+     */
     fun getByName(ip: String): Inet4Address? {
         return if (isValid(ip)) {
-            val asBytes = toBytes(ip)
-            return Inet4Address.getByAddress(ip, asBytes) as Inet4Address
+            return getByNameUnsafe(ip)
         } else {
             null
         }
