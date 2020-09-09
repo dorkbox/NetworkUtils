@@ -20,6 +20,8 @@ package dorkbox.netUtil
 import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
+import java.net.NetworkInterface
+import java.net.SocketException
 import java.net.UnknownHostException
 
 /**
@@ -81,6 +83,44 @@ object IPv6 {
      * networking properties](https://docs.oracle.com/javase/8/docs/api/java/net/doc-files/net-properties.html)
      */
     val isPreferred = Common.getBoolean("java.net.preferIPv6Addresses", false)
+
+    /**
+     * true if there is an IPv6 network interface available
+     */
+    val isAvailable: Boolean by lazy {
+        // Retrieve the list of available network interfaces.
+        val netInterfaces = mutableListOf<NetworkInterface>()
+        try {
+            val interfaces = NetworkInterface.getNetworkInterfaces()
+            if (interfaces != null) {
+                while (interfaces.hasMoreElements()) {
+                    val iface: NetworkInterface = interfaces.nextElement()
+                    // Use the interface with proper INET addresses only.
+                    if (SocketUtils.addressesFromNetworkInterface(iface).hasMoreElements()) {
+                        netInterfaces.add(iface)
+                    }
+                }
+            }
+        } catch (e: SocketException) {
+            Common.logger.warn("Failed to retrieve the list of available network interfaces", e)
+        }
+
+        // check if IPv4 is possible.
+        var ipv6Possible = false
+        loop@ for (iface in netInterfaces) {
+            val i = SocketUtils.addressesFromNetworkInterface(iface)
+            while (i.hasMoreElements()) {
+                val addr: InetAddress = i.nextElement()
+                if (addr is Inet6Address) {
+                    ipv6Possible = true
+                    break@loop
+                }
+            }
+        }
+
+        ipv6Possible
+    }
+
 
     /**
      * The [Inet6Address] that represents the IPv6 loopback address '::1'

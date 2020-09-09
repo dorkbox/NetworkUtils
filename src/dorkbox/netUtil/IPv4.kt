@@ -22,7 +22,9 @@ import java.io.Writer
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.net.NetworkInterface
 import java.net.Socket
+import java.net.SocketException
 import java.util.*
 import kotlin.math.floor
 import kotlin.math.ln
@@ -46,6 +48,44 @@ object IPv4 {
      * @see [Java SE networking properties](https://docs.oracle.com/javase/8/docs/api/java/net/doc-files/net-properties.html)
      */
     val isPreferred = Common.getBoolean("java.net.preferIPv4Stack", false)
+
+    /**
+     * true if there is an IPv4 network interface available
+     */
+    val isAvailable: Boolean by lazy {
+        // Retrieve the list of available network interfaces.
+        val netInterfaces = mutableListOf<NetworkInterface>()
+        try {
+            val interfaces = NetworkInterface.getNetworkInterfaces()
+            if (interfaces != null) {
+                while (interfaces.hasMoreElements()) {
+                    val iface: NetworkInterface = interfaces.nextElement()
+                    // Use the interface with proper INET addresses only.
+                    if (SocketUtils.addressesFromNetworkInterface(iface).hasMoreElements()) {
+                        netInterfaces.add(iface)
+                    }
+                }
+            }
+        } catch (e: SocketException) {
+            Common.logger.warn("Failed to retrieve the list of available network interfaces", e)
+        }
+
+        // check if IPv4 is possible.
+        var ipv4Possible = false
+        loop@ for (iface in netInterfaces) {
+            val i = SocketUtils.addressesFromNetworkInterface(iface)
+            while (i.hasMoreElements()) {
+                val addr: InetAddress = i.nextElement()
+                if (addr is Inet4Address) {
+                    ipv4Possible = true
+                    break@loop
+                }
+            }
+        }
+
+        ipv4Possible
+    }
+
 
     /**
      * The [Inet4Address] that represents the IPv4 loopback address '127.0.0.1'
