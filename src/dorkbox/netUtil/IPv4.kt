@@ -100,7 +100,7 @@ object IPv4 {
      */
     val WILDCARD: Inet4Address by lazy {
         // Create IPv4 address, this will ALWAYS work
-        InetAddress.getByAddress("", byteArrayOf(0, 0, 0, 0)) as Inet4Address
+        InetAddress.getByAddress(null, byteArrayOf(0, 0, 0, 0)) as Inet4Address
     }
 
     /**
@@ -782,9 +782,9 @@ object IPv4 {
      * @param ip [String] IP address to be converted to a [Inet4Address]
      * @return [Inet4Address] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun getByNameUnsafe(ip: String): Inet4Address {
+    fun fromStringUnsafe(ip: String): Inet4Address {
         val asBytes = toBytes(ip)
-        return Inet4Address.getByAddress(ip, asBytes) as Inet4Address
+        return Inet4Address.getByAddress(null, asBytes) as Inet4Address
     }
 
     /**
@@ -795,9 +795,9 @@ object IPv4 {
      * @param ip [String] IP address to be converted to a [Inet4Address]
      * @return [Inet4Address] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun getByName(ip: String): Inet4Address? {
+    fun fromString(ip: String): Inet4Address? {
         return if (isValid(ip)) {
-            return getByNameUnsafe(ip)
+            return fromStringUnsafe(ip)
         } else {
             null
         }

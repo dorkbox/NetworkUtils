@@ -256,11 +256,11 @@ object IP {
      * @param ip [CharSequence] IP address to be converted to a [InetAddress]
      * @return [InetAddress] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun getByName(ip: String): InetAddress? {
+    fun fromString(ip: String): InetAddress? {
         return if (IPv4.isValid(ip)) {
-            IPv4.getByNameUnsafe(ip)
+            IPv4.fromStringUnsafe(ip)
         } else {
-            IPv6.getByName(ip)
+            IPv6.fromString(ip)
         }
     }
 }

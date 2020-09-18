@@ -135,7 +135,7 @@ object IPv6 {
      */
     val WILDCARD: Inet6Address by lazy {
         // Create IPv6 address, this will ALWAYS work
-        InetAddress.getByAddress("", byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) as Inet6Address
+        InetAddress.getByAddress(null, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) as Inet6Address
     }
 
     /**
@@ -272,8 +272,8 @@ object IPv6 {
      * @param ip [CharSequence] IP address to be converted to a [Inet6Address]
      * @return [Inet6Address] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun getByName(ip: String): Inet6Address? {
-        return getByName(ip, true)
+    fun fromString(ip: String): Inet6Address? {
+        return fromString(ip, true)
     }
 
 
@@ -291,7 +291,7 @@ object IPv6 {
      * </ul>
      * @return [Inet6Address] representation of the [ip] or [null] if not a valid IP address.
      */
-    fun getByName(ip: String, ipv4Mapped: Boolean): Inet6Address? {
+    fun fromString(ip: String, ipv4Mapped: Boolean): Inet6Address? {
         val bytes = getIPv6ByName(ip, ipv4Mapped) ?: return null
         return try {
             Inet6Address.getByAddress(null, bytes, -1)
@@ -520,7 +520,7 @@ object IPv6 {
      */
     fun toBytesOrNull(ipAddress: String): ByteArray? {
         if (isValid(ipAddress)) {
-            return getByName(ipAddress)?.address
+            return fromString(ipAddress)?.address
         }
 
         return null
@@ -539,7 +539,7 @@ object IPv6 {
             fixedIp = fixedIp.substring(0, percentPos)
         }
 
-        return getByName(fixedIp)?.address ?: ByteArray(32)
+        return fromString(fixedIp)?.address ?: ByteArray(32)
     }
 
 
