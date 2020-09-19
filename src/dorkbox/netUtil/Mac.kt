@@ -258,6 +258,7 @@ object Mac {
                 buf.append('0')
             }
 
+            @Suppress("EXPERIMENTAL_API_USAGE")
             buf.append(Integer.toHexString(byte.toUByte().toInt()))
         }
 
