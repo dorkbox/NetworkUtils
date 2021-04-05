@@ -19,12 +19,7 @@ package dorkbox.netUtil
 
 import java.io.IOException
 import java.io.Writer
-import java.net.Inet4Address
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.NetworkInterface
-import java.net.Socket
-import java.net.SocketException
+import java.net.*
 import java.util.*
 import kotlin.math.floor
 import kotlin.math.ln
@@ -148,8 +143,8 @@ object IPv4 {
      *  172.16.0.0/12
      *  192.168.0.0/16
      */
-    fun isPrivate(ipAsString: String): Boolean {
-        return isPrivate(toInt(ipAsString))
+    fun isSiteLocal(ipAsString: String): Boolean {
+        return isSiteLocal(toInt(ipAsString))
     }
 
     /**
@@ -160,7 +155,7 @@ object IPv4 {
      *  172.16.0.0/12
      *  192.168.0.0/16
      */
-    fun isPrivate(ipAsInt: Int): Boolean {
+    fun isSiteLocal(ipAsInt: Int): Boolean {
         // check from smaller to larger
         return isInRange(ipAsInt, private192, 16) || isInRange(ipAsInt, private172, 12) || isInRange(ipAsInt, private10, 8)
     }
