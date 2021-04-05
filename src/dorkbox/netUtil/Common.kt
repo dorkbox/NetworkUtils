@@ -3,6 +3,7 @@
 package dorkbox.netUtil
 
 import mu.KotlinLogging
+import java.net.InetSocketAddress
 import java.security.AccessController
 import java.security.PrivilegedAction
 
@@ -24,13 +25,13 @@ internal object Common {
             }
         } catch (ignored: java.lang.Exception) {
             "linux"
-        }
+        }.toLowerCase()
 
         if (osName.startsWith("mac") || osName.startsWith("darwin")) {
             OS_LINUX = false
             OS_WINDOWS = false
             OS_MAC = true
-        } else if (osName.startsWith("windows")) {
+        } else if (osName.startsWith("win")) {
             OS_LINUX = false
             OS_WINDOWS = true
             OS_MAC = false
@@ -105,5 +106,9 @@ internal object Common {
         } catch (e: Exception) {
             -1
         }
+    }
+
+    fun socketAddress(hostname: String, port: Int): InetSocketAddress {
+        return AccessController.doPrivileged<InetSocketAddress>(PrivilegedAction { InetSocketAddress(hostname, port) })
     }
 }
