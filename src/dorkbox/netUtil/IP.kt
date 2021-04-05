@@ -1,12 +1,7 @@
 package dorkbox.netUtil
 
 import dorkbox.netUtil.Common.logger
-import java.net.Inet4Address
-import java.net.Inet6Address
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.NetworkInterface
-import java.net.SocketException
+import java.net.*
 
 /**
  * A class that holds a number of network-related constants, also from:
@@ -129,6 +124,117 @@ object IP {
 
         LOOPBACK_IF = loopbackIface!!
         LOCALHOST = loopbackAddr!!
+    }
+
+    /**
+     * The LAN address of the machine, to the best of our ability
+     */
+    fun lanAddress(): InetAddress {
+        /**
+         * Returns an `InetAddress` object encapsulating what is most likely the machine's LAN IP address.
+         *
+         *
+         * This method is intended for use as a replacement of JDK method `InetAddress.getLocalHost`, because
+         * that method is ambiguous on Linux systems. Linux systems enumerate the loopback network interface the same
+         * way as regular LAN network interfaces, but the JDK `InetAddress.getLocalHost` method does not
+         * specify the algorithm used to select the address returned under such circumstances, and will often return the
+         * loopback address, which is not valid for network communication. Details
+         * [here](http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4665037).
+         *
+         *
+         * This method will scan all IP addresses on all network interfaces on the host machine to determine the IP address
+         * most likely to be the machine's LAN address. If the machine has multiple IP addresses, this method will prefer
+         * a site-local IP address (e.g. 192.168.x.x or 10.10.x.x, usually IPv4) if the machine has one (and will return the
+         * first site-local address if the machine has more than one), but if the machine does not hold a site-local
+         * address, this method will return simply the first non-loopback address found (IPv4 or IPv6).
+         *
+         *
+         * If this method cannot find a non-loopback address using this selection algorithm, it will fall back to
+         * calling and returning the result of JDK method `InetAddress.getLocalHost`.
+         *
+         *
+         * @throws UnknownHostException If the LAN address of the machine cannot be found.
+         *
+         * From: https://issues.apache.org/jira/browse/JCS-40
+         */
+        val likelyAddress = mutableListOf<InetAddress>()
+        val candidates = mutableListOf<InetAddress>()
+
+        try {
+            // Iterate all NICs (network interface cards)...
+            val ifaces = NetworkInterface.getNetworkInterfaces()
+            while (ifaces.hasMoreElements()) {
+                val iface = ifaces.nextElement()
+                // Iterate all IP addresses assigned to each card...
+                val inetAddrs = iface.inetAddresses
+                while (inetAddrs.hasMoreElements()) {
+                    val inetAddr = inetAddrs.nextElement()
+                    if (!inetAddr.isLoopbackAddress) {
+                        if (inetAddr.isSiteLocalAddress) {
+                            // Found non-loopback site-local address. Return it immediately...
+                            likelyAddress.add(inetAddr)
+                        } else {
+                            // Found non-loopback address, but not necessarily site-local.
+                            // Store it as a candidate to be returned if site-local address is not subsequently found...
+                            candidates.add(inetAddr)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // ignored
+        }
+
+        if (likelyAddress.size == 1) {
+            return likelyAddress.first()
+        }
+
+        // we have MORE than 1 likely address, but we DO NOT know which one is used for 0.0.0.0 traffic.
+        // we **COULD** parse out the gateway information from the routes for each interface... but that is a huge amount of work.
+        // it's MUCH easier to see if open a connection to 1.1.1.1 and get the interface this traffic was on, and use that interface IP address
+        runCatching {
+            Socket().use {
+                it.connect(InetSocketAddress("1.1.1.1", 80))
+                return it.localAddress
+            }
+        }.onFailure {
+            Common.logger.error("Unable to determine outbound traffic local address. Using alternate logic instead.", it)
+        }
+
+        // there was an error doing this! (it's possible that outbound traffic is not allowed
+        if (IPv6.isPreferred) {
+            val ipv6 = likelyAddress.filterIsInstance<Inet6Address>()
+            if (ipv6.isNotEmpty()) {
+                return ipv6.first()
+            }
+        } else if (IPv4.isPreferred) {
+            val ipv4 = likelyAddress.filterIsInstance<Inet4Address>()
+            if (ipv4.isNotEmpty()) {
+                return ipv4.first()
+            }
+        }
+
+        // we STILL don't have something. Possibly that we have no likely addresses, but we
+        // found some other non-loopback address.
+        // The machine might have a non-site-local address assigned to its NIC (or it might be running
+        // IPv6 which deprecates the "site-local" concept).
+        // Return this non-loopback candidate address...
+        if (IPv6.isPreferred) {
+            val ipv6 = candidates.filterIsInstance<Inet6Address>()
+            if (ipv6.isNotEmpty()) {
+                return ipv6.first()
+            }
+        } else if (IPv4.isPreferred) {
+            val ipv4 = candidates.filterIsInstance<Inet4Address>()
+            if (ipv4.isNotEmpty()) {
+                return ipv4.first()
+            }
+        }
+
+        // At this point, we did not find a non-loopback address.
+        // Fall back to returning whatever InetAddress.getLocalHost() returns...
+        return InetAddress.getLocalHost()
+            ?: throw UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.")
     }
 
     /**
