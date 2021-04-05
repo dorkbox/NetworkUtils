@@ -17,9 +17,7 @@ package dorkbox.netUtil
 
 import dorkbox.util.Sys
 import org.junit.Assert
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import java.net.Inet6Address
 import java.net.InetAddress
@@ -584,6 +582,21 @@ class NetUtilTest {
     }
 
     @Test
+    fun testLanAddress() {
+        Assert.assertNotNull(IP.lanAddress())
+    }
+
+    @Test
+    fun testDnsNameServers() {
+        Assert.assertTrue(Dns.defaultNameServers.isNotEmpty())
+    }
+
+    @Test
+    fun testDnsNdots() {
+        Assert.assertTrue(Dns.numberDots >= 1)
+    }
+
+    @Test
     fun testLocalhost() {
         Assert.assertNotNull(IP.LOCALHOST)
     }
@@ -752,10 +765,10 @@ class NetUtilTest {
 
     @Test
     fun testIsPrivate() {
-        assertTrue(IPv4.isPrivate("192.168.23.102"))
-        assertTrue(IPv4.isPrivate("10.10.234.102"))
-        assertTrue(IPv4.isPrivate("172.16.45.13"))
-        assertFalse(IPv4.isPrivate("72.66.83.240"))
+        assertTrue(IPv4.isSiteLocal("192.168.23.102"))
+        assertTrue(IPv4.isSiteLocal("10.10.234.102"))
+        assertTrue(IPv4.isSiteLocal("172.16.45.13"))
+        assertFalse(IPv4.isSiteLocal("72.66.83.240"))
     }
 
     @Test
