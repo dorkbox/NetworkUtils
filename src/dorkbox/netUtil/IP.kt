@@ -1,7 +1,10 @@
 package dorkbox.netUtil
 
 import dorkbox.netUtil.Common.logger
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.net.*
+import java.util.regex.Pattern
 
 /**
  * A class that holds a number of network-related constants, also from:
@@ -235,6 +238,48 @@ object IP {
         // Fall back to returning whatever InetAddress.getLocalHost() returns...
         return InetAddress.getLocalHost()
             ?: throw UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.")
+    }
+
+    /**
+     * This will retrieve your IP address via an HTTP server.
+     *
+     * **NOTE: Can optionally use DnsClient.getPublicIp() instead. It's much faster and more reliable as it uses DNS.**
+     *
+     * @return the public IP address if found, or null if it didn't find it
+     */
+    fun getPublicIpViaHttp(): String? {
+        // method 1: use DNS servers
+        // dig +short myip.opendns.com @resolver1.opendns.com
+
+        // method 2: use public http servers
+        // @formatter:off
+        val  websites = arrayOf(
+            "http://ip.dorkbox.com/",
+            "http://checkip.dyndns.com/",
+            "http://checkip.dyn.com/",
+            "http://curlmyip.com/",
+            "http://ipecho.net/plain",
+            "http://icanhazip.com/")
+        // @formatter:on
+
+        // loop, since they won't always work.
+        for (i in websites.indices) {
+            try {
+                val autoIP = URL(websites[i])
+                val `in` = BufferedReader(InputStreamReader(autoIP.openStream()))
+                val response = `in`.readLine()
+                    .trim { it <= ' ' }
+                `in`.close()
+                val pattern = Pattern.compile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b")
+                val matcher = pattern.matcher(response)
+                if (matcher.find()) {
+                    return matcher.group()
+                        .trim { it <= ' ' }
+                }
+            } catch (ignored: java.lang.Exception) {
+            }
+        }
+        return null
     }
 
     /**
