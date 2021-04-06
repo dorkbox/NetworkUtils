@@ -7,6 +7,11 @@ import java.io.File
  *
  */
 object Dhcp {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     fun start(id: String, interfaceName: String) {
         if (Common.OS_LINUX) {
             stop(id, interfaceName)

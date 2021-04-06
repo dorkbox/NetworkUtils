@@ -8,6 +8,11 @@ import java.util.*
  *
  */
 object NameSpace {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     object Route {
         fun flush(nameSpace: String) {
             if (Common.OS_LINUX) {

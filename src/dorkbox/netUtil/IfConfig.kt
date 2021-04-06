@@ -6,6 +6,11 @@ import dorkbox.executor.Executor
  *
  */
 object IfConfig {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     fun assignMac(interfaceName: String, interfaceMac: String) {
         if (Common.OS_LINUX) {
              Executor.run("/sbin/ifconfig", interfaceName, "hw", "ether", interfaceMac)

@@ -12,6 +12,11 @@ import java.time.Duration
 class Ping {
     companion object {
         private val logger = LoggerFactory.getLogger(Ping::class.java.simpleName)
+
+        /**
+         * Gets the version number.
+         */
+        const val version = "2.1"
     }
 
     private val count = 4

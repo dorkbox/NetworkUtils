@@ -30,20 +30,20 @@ gradle.startParameter.warningMode = WarningMode.All
 plugins {
     java
 
-    id("com.dorkbox.GradleUtils") version "1.10"
-    id("com.dorkbox.Licensing") version "2.2"
-    id("com.dorkbox.VersionUpdate") version "2.0"
-    id("com.dorkbox.GradlePublish") version "1.6"
-    id("com.dorkbox.GradleModuleInfo") version "1.0"
+    id("com.dorkbox.GradleUtils") version "1.16"
+    id("com.dorkbox.Licensing") version "2.5.5"
+    id("com.dorkbox.VersionUpdate") version "2.1"
+    id("com.dorkbox.GradlePublish") version "1.10"
+//    id("com.dorkbox.GradleModuleInfo") version "1.1"
 
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.32"
 }
 
 object Extras {
     // set for the project
     const val description = "Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)"
     const val group = "com.dorkbox"
-    const val version = "2.0"
+    const val version = "2.1"
 
     // set as project.ext
     const val name = "NetworkUtils"
@@ -61,7 +61,7 @@ object Extras {
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.fixIntellijPaths()
 GradleUtils.defaultResolutionStrategy()
-GradleUtils.compileConfiguration(JavaVersion.VERSION_11)
+GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
 
 
 licensing {
@@ -69,12 +69,14 @@ licensing {
         description(Extras.description)
         url(Extras.url)
         author(Extras.vendor)
+
         extra("Netty", License.APACHE_2) {
             it.copyright(2014)
             it.author("The Netty Project")
             it.url("https://netty.io/")
             it.note("This product contains a modified portion of Netty Network Utils")
         }
+
         extra("Apache Harmony", License.APACHE_2) {
             it.copyright(2010)
             it.author("The Apache Software Foundation")
@@ -143,15 +145,20 @@ tasks.jar.get().apply {
 }
 
 dependencies {
+    implementation(kotlin("stdlib-jdk8"))
     // https://github.com/MicroUtils/kotlin-logging
-    implementation("io.github.microutils:kotlin-logging:1.8.3")  // slick kotlin wrapper for slf4j
+    implementation("io.github.microutils:kotlin-logging:2.0.6")  // slick kotlin wrapper for slf4j
     implementation("org.slf4j:slf4j-api:1.7.30")
-    
-    implementation("com.dorkbox:Executor:1.1")
 
-    testImplementation("junit:junit:4.13")
+    implementation("com.dorkbox:Executor:3.0")
+
+    val jnaVersion = "5.8.0"
+    implementation("net.java.dev.jna:jna:$jnaVersion")
+    implementation("net.java.dev.jna:jna-platform:$jnaVersion")
+
+    testImplementation("junit:junit:4.13.2")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
-    testImplementation("com.dorkbox:Utilities:1.6")
+    testImplementation("com.dorkbox:Utilities:1.9")
 }
 
 publishToSonatype {

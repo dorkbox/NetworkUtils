@@ -4,6 +4,11 @@ import dorkbox.executor.Executor
 import java.io.File
 
 object Arp {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     // Now setup ARP Proxy for this interface (so ARP requests are answered correctly)
     fun proxyAdd(interfaceName: String) {
         if (Common.OS_LINUX) {

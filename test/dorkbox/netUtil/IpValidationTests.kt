@@ -24,7 +24,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.UnknownHostException
 
-class NetUtilTest {
+class IpValidationTests {
     companion object {
         private val validIpV4Hosts = mapOf(
 //                "192.168.1.0" to "c0a80100",
@@ -582,21 +582,6 @@ class NetUtilTest {
     }
 
     @Test
-    fun testLanAddress() {
-        Assert.assertNotNull(IP.lanAddress())
-    }
-
-    @Test
-    fun testDnsNameServers() {
-        Assert.assertTrue(Dns.defaultNameServers.isNotEmpty())
-    }
-
-    @Test
-    fun testDnsNdots() {
-        Assert.assertTrue(Dns.numberDots >= 1)
-    }
-
-    @Test
     fun testLocalhost() {
         Assert.assertNotNull(IP.LOCALHOST)
     }
@@ -668,7 +653,7 @@ class NetUtilTest {
             assertHexDumpEquals(value, IPv4.toBytes(ip), ip)
         }
         for ((ip, value) in invalidIpV4Hosts) {
-            assertHexDumpEquals(value, IPv4.toBytesorNull(ip), ip)
+            assertHexDumpEquals(value, IPv4.toBytesOrNull(ip), ip)
         }
         for ((ip, value) in validIpV6Hosts) {
             assertHexDumpEquals(value, IPv6.toBytes(ip), ip)

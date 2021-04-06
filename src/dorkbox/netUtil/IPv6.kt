@@ -35,6 +35,11 @@ import java.net.UnknownHostException
  */
 object IPv6 {
     /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
+    /**
      * Maximum amount of value adding characters in between IPV6 separators
      */
     private const val IPV6_MAX_CHAR_BETWEEN_SEPARATOR = 4

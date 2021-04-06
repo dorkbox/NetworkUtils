@@ -16,15 +16,7 @@
 package dorkbox.netUtil
 
 import java.io.IOException
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.NetworkInterface
-import java.net.ServerSocket
-import java.net.Socket
-import java.net.SocketAddress
-import java.net.SocketException
-import java.net.SocketPermission
-import java.net.UnknownHostException
+import java.net.*
 import java.nio.channels.DatagramChannel
 import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
@@ -42,6 +34,11 @@ import java.util.*
  * the appropriate [SocketPermission].
  */
 object SocketUtils {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     private val EMPTY = Collections.enumeration(emptyList<Any>())
 
     @Suppress("UNCHECKED_CAST")

@@ -6,10 +6,12 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 
-/**
- *
- */
 object IPRoute {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     private val reservedTable = StringBuilder(2048)
     private val tableNames: MutableMap<Int, String?> = HashMap(256)
 

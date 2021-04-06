@@ -20,6 +20,11 @@ import javax.naming.directory.InitialDirContext
 
 object Dns {
     /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
+    /**
      * @throws IOException if the DNS resolve.conf file cannot be read
      */
     fun setDNSServers(dnsServersString: String) {

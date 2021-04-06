@@ -6,6 +6,11 @@ import dorkbox.executor.Executor
  *
  */
 object Route {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     fun flush() {
         Executor.run("/sbin/ip", "route", "flush", "cache")
     }

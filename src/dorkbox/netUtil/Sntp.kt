@@ -7,27 +7,35 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
+ * SNTP client for retrieving time.
  *
+ * https://tools.ietf.org/html/rfc2030
+ *
+ * Sample usage:
+ * ```
+ * val adjustedSystemTime = Sntp.update("time.mit.edu").now
+ *```
  */
 object Sntp {
     /**
-     * Simple SNTP client class for retrieving network time.
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
+    /**
+     * SNTP client for retrieving time.
      *
      * https://tools.ietf.org/html/rfc2030
      *
      * Sample usage:
-     * <pre>SntpClient client = new SntpClient();
-     * if (client.requestTime("time.foo.com")) {
-     * long now = client.getNtpTime() + SystemClock.elapsedRealtime() - client.getNtpTimeReference();
-     * }
-    </pre> *
+     * ```
+     * val adjustedSystemTime = Sntp.update("time.mit.edu").now
+     *```
      */
     class SntpClient {
         companion object {
             private class InvalidServerReplyException(message: String) : Exception(message)
 
-            private const val TAG = "SntpClient"
-            private const val DBG = true
             private const val REFERENCE_TIME_OFFSET = 16
             private const val ORIGINATE_TIME_OFFSET = 24
             private const val RECEIVE_TIME_OFFSET = 32
@@ -212,6 +220,12 @@ object Sntp {
             private set
 
         /**
+         * adjusted system time (via values from the NTP server) in milliseconds since January 1, 1970
+         */
+        val now: Long
+            get() = System.currentTimeMillis() + this.localClockOffset
+
+        /**
          * Sends an SNTP request to the given host and processes the response.
          *
          * @param host host name of the server.
@@ -299,7 +313,7 @@ object Sntp {
                 roundTripDelay = (destinationTimestamp - originateTimestamp) - (transmitTimestamp - receiveTimestamp)
                 localClockOffset = ((receiveTimestamp - originateTimestamp) + (transmitTimestamp - destinationTimestamp)) / 2L
             } catch (e: Exception) {
-                System.err.println("Error with NTP to $address.  $e")
+                System.err.println("Error with NTP to $address. $e")
             } finally {
                 socket?.close()
             }
@@ -387,24 +401,4 @@ object Sntp {
     fun update(server: String, timeoutInMS: Int = 10_000): SntpClient {
         return SntpClient().requestTime(server, timeoutInMS)
     }
-
-//        @JvmStatic
-//        fun main(args: Array<String>) {
-//            val ntp = update("time.mit.edu")
-//
-//            // Display response
-//            val now = System.currentTimeMillis()
-//            val cor = now + ntp.localClockOffset
-//
-//            System.out.printf ("Originate time:    %1\$ta, %1\$td %1\$tb %1\$tY, %1\$tI:%1\$tm:%1\$tS.%1\$tL %1\$tp %1\$tZ%n", ntp.originateTimestamp);
-//            System.out.printf ("Receive time:      %1\$ta, %1\$td %1\$tb %1\$tY, %1\$tI:%1\$tm:%1\$tS.%1\$tL %1\$tp %1\$tZ%n", ntp.receiveTimestamp)
-//            System.out.printf ("Transmit time:     %1\$ta, %1\$td %1\$tb %1\$tY, %1\$tI:%1\$tm:%1\$tS.%1\$tL %1\$tp %1\$tZ%n", ntp.transmitTimestamp)
-//            System.out.printf ("Destination time:  %1\$ta, %1\$td %1\$tb %1\$tY, %1\$tI:%1\$tm:%1\$tS.%1\$tL %1\$tp %1\$tZ%n", ntp.destinationTimestamp)
-//
-//            System.out.println("RoundTripDelay :  ${ntp.roundTripDelay}")
-//            System.out.println("ClockOffset    :  ${ntp.localClockOffset}")
-//
-//            System.out.printf ("Local time:      %1\$ta, %1\$td %1\$tb %1\$tY, %1\$tI:%1\$tm:%1\$tS.%1\$tL %1\$tp %1\$tZ%n", now)
-//            System.out.printf ("Corrected time:  %1\$ta, %1\$td %1\$tb %1\$tY, %1\$tI:%1\$tm:%1\$tS.%1\$tL %1\$tp %1\$tZ%n", cor)
-//        }
 }

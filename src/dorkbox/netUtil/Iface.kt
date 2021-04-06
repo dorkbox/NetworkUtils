@@ -7,6 +7,11 @@ import java.util.*
  *
  */
 object Iface {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     private val ifToIp: MutableMap<String, String> = HashMap()
 
     /**

@@ -6,6 +6,11 @@ import dorkbox.executor.Executor
  *
  */
 object VirtualEth {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
     fun add(host: String, guest: String) {
         if (Common.OS_LINUX) {
             Executor().command("/sbin/ip", "link", "add", "name", host, "type", "veth", "peer", "name", guest).startBlocking()

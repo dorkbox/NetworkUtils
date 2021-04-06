@@ -37,6 +37,11 @@ import kotlin.math.pow
 @Suppress("EXPERIMENTAL_API_USAGE")
 object IPv4 {
     /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
+    /**
      * Returns `true` if IPv4 should be used even if the system supports both IPv4 and IPv6. Setting this
      * property to `true` will disable IPv6 support. The default value of this property is `false`.
      *
@@ -278,7 +283,7 @@ object IPv4 {
     }
 
 
-    fun toBytesorNull(ip: String): ByteArray? {
+    fun toBytesOrNull(ip: String): ByteArray? {
         if (!isValid(ip)) {
             return null
         }

@@ -18,6 +18,11 @@ import java.util.regex.Pattern
 object IP {
 
     /**
+     * Gets the version number.
+     */
+    const val version = "2.1"
+
+    /**
      * The [InetAddress] that represents the loopback address. If IPv6 stack is available, it will refer to
      * [.LOCALHOST6].  Otherwise, [.LOCALHOST4].
      */
@@ -247,7 +252,7 @@ object IP {
      *
      * @return the public IP address if found, or null if it didn't find it
      */
-    fun getPublicIpViaHttp(): String? {
+    fun publicIpViaHttp(): String? {
         // method 1: use DNS servers
         // dig +short myip.opendns.com @resolver1.opendns.com
 
