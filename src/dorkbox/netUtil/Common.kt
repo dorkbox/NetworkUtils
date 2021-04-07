@@ -3,6 +3,7 @@
 package dorkbox.netUtil
 
 import mu.KotlinLogging
+import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.security.AccessController
 import java.security.PrivilegedAction
@@ -110,5 +111,9 @@ internal object Common {
 
     fun socketAddress(hostname: String, port: Int): InetSocketAddress {
         return AccessController.doPrivileged<InetSocketAddress>(PrivilegedAction { InetSocketAddress(hostname, port) })
+    }
+
+    fun socketAddress(host: InetAddress, port: Int): InetSocketAddress {
+        return AccessController.doPrivileged<InetSocketAddress>(PrivilegedAction { InetSocketAddress(host, port) })
     }
 }
