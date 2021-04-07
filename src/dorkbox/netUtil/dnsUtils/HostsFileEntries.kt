@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package dorkbox.netUtil.hosts
+package dorkbox.netUtil.dnsUtils
 
 import java.net.Inet4Address
 import java.net.Inet6Address

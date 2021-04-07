@@ -14,10 +14,10 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package dorkbox.netUtil.hosts
+package dorkbox.netUtil.dnsUtils
 
 import dorkbox.netUtil.Common.OS_WINDOWS
-import dorkbox.netUtil.hosts.HostsFileParser.parse
+import dorkbox.netUtil.dnsUtils.HostsFileParser.parse
 import java.net.InetAddress
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
