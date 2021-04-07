@@ -4,6 +4,8 @@ import com.sun.jna.Memory
 import com.sun.jna.Pointer.*
 import com.sun.jna.platform.win32.WinError
 import dorkbox.executor.Executor
+import dorkbox.netUtil.hosts.DefaultHostsFileResolver
+import dorkbox.netUtil.hosts.ResolvedAddressTypes
 import dorkbox.netUtil.jna.windows.IPHlpAPI
 import dorkbox.netUtil.jna.windows.structs.IP_ADAPTER_ADDRESSES_LH
 import dorkbox.netUtil.jna.windows.structs.IP_ADAPTER_DNS_SERVER_ADDRESS_XP
@@ -11,8 +13,6 @@ import java.io.*
 import java.net.*
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.security.AccessController
-import java.security.PrivilegedAction
 import java.util.*
 import javax.naming.Context
 import javax.naming.NamingException
@@ -26,7 +26,8 @@ object Dns {
      */
     const val version = "2.1"
 
-    private const val DEFAULT_SEARCH_DOMAIN = ""
+    const val DEFAULT_SEARCH_DOMAIN = ""
+
     private const val NAMESERVER_ROW_LABEL = "nameserver"
     private const val DOMAIN_ROW_LABEL = "domain"
     private const val PORT_ROW_LABEL = "port"
@@ -60,26 +61,43 @@ object Dns {
         }
     }
 
-    /** Returns all located name servers, which may be empty. */
-    val defaultNameServers: List<InetSocketAddress> by lazy {
-        val nameServers = getUnsortedDefaultNameServers()
 
+    /**
+     * Resolve the address of a hostname against the entries in a hosts file, depending on some address types.
+     *
+     * @param inetHost the hostname to resolve
+     * @param resolvedAddressTypes the address types to resolve
+     *
+     * @return the first matching address or null
+     */
+    fun resolveFromHosts(inetHost: String, resolvedAddressTypes: ResolvedAddressTypes = ResolvedAddressTypes.IPV4_PREFERRED): InetAddress? {
+        return DefaultHostsFileResolver.address(inetHost, resolvedAddressTypes)
+    }
+
+    /** Returns all name servers, including the default ones. */
+    val nameServers: Map<String, List<InetSocketAddress>> by lazy {
+        getUnsortedNameServers()
+    }
+
+    /** Returns all default name servers. */
+    val defaultNameServers: List<InetSocketAddress> by lazy {
+        val defaultServers = nameServers[DEFAULT_SEARCH_DOMAIN]!!
         if (IPv6.isPreferred) {
             // prefer IPv6: return IPv6 first, then IPv4 (each in the order added)
-            nameServers.filter { it.address is Inet6Address } + nameServers.filter { it.address is Inet4Address }
+            defaultServers.filter { it.address is Inet6Address } + defaultServers.filter { it.address is Inet4Address }
         } else if (IPv4.isPreferred) {
             // skip IPv6 addresses
-            nameServers.filter { it.address is Inet4Address }
+            defaultServers.filter { it.address is Inet4Address }
         }
 
         // neither is specified, return in the order added
-        nameServers
+        defaultServers
     }
 
     // largely from:
     // https://github.com/dnsjava/dnsjava/blob/fb4889ee7a73f391f43bf6dc78b019d87ae15f15/src/main/java/org/xbill/DNS/config/BaseResolverConfigProvider.java#L22
-    private fun getUnsortedDefaultNameServers() : List<InetSocketAddress> {
-        val defaultNameServers = mutableListOf<InetSocketAddress>()
+    private fun getUnsortedNameServers() : Map<String, List<InetSocketAddress>> {
+        val nameServerDomains = mutableMapOf<String, List<InetSocketAddress>>()
 
         // Using jndi-dns to obtain the default name servers.
         //
@@ -98,21 +116,23 @@ object Dns {
         try {
             val ctx: DirContext = InitialDirContext(env)
             val dnsUrls = ctx.environment["java.naming.provider.url"] as String?
-            val servers = dnsUrls!!.split(" ".toRegex()).toTypedArray()
+            if (dnsUrls != null) {
+                val servers = dnsUrls.split(" ".toRegex()).toTypedArray()
 
-            for (server in servers) {
-                try {
-                    defaultNameServers.add(Common.socketAddress(URI(server).host, 53))
-                } catch (e: URISyntaxException) {
-                    Common.logger.debug("Skipping a malformed nameserver URI: {}", server, e)
+                for (server in servers) {
+                    try {
+                        if (nameServerDomains[DEFAULT_SEARCH_DOMAIN] == null) {
+                            nameServerDomains[DEFAULT_SEARCH_DOMAIN] = mutableListOf()
+                        }
+                        (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(Common.socketAddress(server, 53))
+
+                    } catch (e: URISyntaxException) {
+                        Common.logger.debug("Skipping a malformed nameserver URI: {}", server, e)
+                    }
                 }
             }
         } catch (ignore: NamingException) {
             // Will also try JNA/etc if this fails.
-        }
-
-        if (defaultNameServers.isNotEmpty()) {
-            return defaultNameServers
         }
 
         if (Common.OS_WINDOWS) {
@@ -160,7 +180,11 @@ object Dns {
                             try {
                                 address = dns.Address.toAddress()
                                 if (address is Inet4Address || !address.isSiteLocalAddress) {
-                                    defaultNameServers.add(InetSocketAddress(address, 53))
+                                    if (nameServerDomains[DEFAULT_SEARCH_DOMAIN] == null) {
+                                        nameServerDomains[DEFAULT_SEARCH_DOMAIN] = mutableListOf()
+                                    }
+
+                                    (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(Common.socketAddress(address, 53))
                                 } else {
                                     Common.logger.debug("Skipped site-local IPv6 server address {} on adapter index {}", address, result.IfIndex)
                                 }
@@ -186,20 +210,18 @@ object Dns {
 
             if (tryParse.first) {
                 // we can have DIFFERENT name servers for DIFFERENT domains!
-                val defaultSearchDomainNameServers = tryParse.second[DEFAULT_SEARCH_DOMAIN]
-                if (defaultSearchDomainNameServers != null) {
-                    defaultNameServers.addAll(defaultSearchDomainNameServers)
-                }
+                tryParse.second
             }
         }
 
-        // if we STILL don't have anything, add global nameservers
-        if (defaultNameServers.isEmpty()) {
-            defaultNameServers.add(InetSocketAddress("1.1.1.1", 53)) // cloudflare
-            defaultNameServers.add(InetSocketAddress("8.8.8.8", 53)) // google
+        // if we STILL don't have anything, add global nameservers to the default search domain
+        if (nameServerDomains[DEFAULT_SEARCH_DOMAIN] == null) {
+            nameServerDomains[DEFAULT_SEARCH_DOMAIN] = mutableListOf()
+            (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(InetSocketAddress("1.1.1.1", 53)) // cloudflare
+            (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(InetSocketAddress("8.8.8.8", 53)) // google
         }
 
-        return defaultNameServers
+        return nameServerDomains
     }
 
     private fun tryParseResolvConfNameservers(path: String): Pair<Boolean, Map<String, List<InetSocketAddress>>> {
@@ -246,7 +268,7 @@ object Dns {
                                     maybeIP = maybeIP.substring(0, i)
                                 }
 
-                                nameServers.add(socketAddress(maybeIP, port))
+                                nameServers.add(Common.socketAddress(maybeIP, port))
                             } else if (line.startsWith(DOMAIN_ROW_LABEL)) {
                                 // nameservers can be SPECIFIC to a search domain
                                 val i = indexOfNonWhiteSpace(line, DOMAIN_ROW_LABEL.length)
@@ -466,9 +488,5 @@ object Dns {
             ++o
         }
         return -1
-    }
-
-    private fun socketAddress(hostname: String, port: Int): InetSocketAddress {
-        return AccessController.doPrivileged(PrivilegedAction { InetSocketAddress(hostname, port) })
     }
 }
