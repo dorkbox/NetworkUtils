@@ -40,9 +40,9 @@ object Dns {
             val dnsServers = dnsServersString.split(",")
             val dnsFile = File("/etc/resolvconf/resolv.conf.d/head")
 
-             if (!dnsFile.canRead()) {
-                 throw IOException("Unable to initialize dns server file. Something is SERIOUSLY wrong")
-             }
+            if (!dnsFile.canRead()) {
+                throw IOException("Unable to initialize dns server file. Something is SERIOUSLY wrong")
+            }
 
             BufferedWriter(FileWriter(dnsFile)).use {
                 it.write("# File location: /etc/resolvconf/resolv.conf.d/head\n")
@@ -88,15 +88,15 @@ object Dns {
         } else if (IPv4.isPreferred) {
             // skip IPv6 addresses
             defaultServers.filter { it.address is Inet4Address }
+        } else {
+            // neither is specified, return in the order added
+            defaultServers
         }
-
-        // neither is specified, return in the order added
-        defaultServers
     }
 
     // largely from:
     // https://github.com/dnsjava/dnsjava/blob/fb4889ee7a73f391f43bf6dc78b019d87ae15f15/src/main/java/org/xbill/DNS/config/BaseResolverConfigProvider.java#L22
-    private fun getUnsortedNameServers() : Map<String, List<InetSocketAddress>> {
+    private fun getUnsortedNameServers(): Map<String, List<InetSocketAddress>> {
         val nameServerDomains = mutableMapOf<String, List<InetSocketAddress>>()
 
         // Using jndi-dns to obtain the default name servers.
@@ -121,11 +121,7 @@ object Dns {
 
                 for (server in servers) {
                     try {
-                        if (nameServerDomains[DEFAULT_SEARCH_DOMAIN] == null) {
-                            nameServerDomains[DEFAULT_SEARCH_DOMAIN] = mutableListOf()
-                        }
-                        (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(Common.socketAddress(server, 53))
-
+                        putIfAbsent(nameServerDomains, DEFAULT_SEARCH_DOMAIN, Common.socketAddress(URI(server).host, 53))
                     } catch (e: URISyntaxException) {
                         Common.logger.debug("Skipping a malformed nameserver URI: {}", server, e)
                     }
@@ -180,13 +176,14 @@ object Dns {
                             try {
                                 address = dns.Address.toAddress()
                                 if (address is Inet4Address || !address.isSiteLocalAddress) {
-                                    if (nameServerDomains[DEFAULT_SEARCH_DOMAIN] == null) {
-                                        nameServerDomains[DEFAULT_SEARCH_DOMAIN] = mutableListOf()
-                                    }
 
-                                    (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(Common.socketAddress(address, 53))
+                                    putIfAbsent(nameServerDomains, DEFAULT_SEARCH_DOMAIN, Common.socketAddress(address, 53))
                                 } else {
-                                    Common.logger.debug("Skipped site-local IPv6 server address {} on adapter index {}", address, result.IfIndex)
+                                    Common.logger.debug(
+                                        "Skipped site-local IPv6 server address {} on adapter index {}",
+                                        address,
+                                        result.IfIndex
+                                    )
                                 }
                             } catch (e: UnknownHostException) {
                                 Common.logger.warn("Invalid nameserver address on adapter index {}", result.IfIndex, e)
@@ -216,9 +213,8 @@ object Dns {
 
         // if we STILL don't have anything, add global nameservers to the default search domain
         if (nameServerDomains[DEFAULT_SEARCH_DOMAIN] == null) {
-            nameServerDomains[DEFAULT_SEARCH_DOMAIN] = mutableListOf()
-            (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(InetSocketAddress("1.1.1.1", 53)) // cloudflare
-            (nameServerDomains[DEFAULT_SEARCH_DOMAIN] as MutableList).add(InetSocketAddress("8.8.8.8", 53)) // google
+            putIfAbsent(nameServerDomains, DEFAULT_SEARCH_DOMAIN, Common.socketAddress("1.1.1.1", 53)) // cloudflare
+            putIfAbsent(nameServerDomains, DEFAULT_SEARCH_DOMAIN, Common.socketAddress("1.1.1.1", 53)) // google
         }
 
         return nameServerDomains
@@ -236,7 +232,7 @@ object Dns {
                         var domainName = DEFAULT_SEARCH_DOMAIN
                         var port = 53
                         var line0: String?
-                        loop@while (br.readLine().also { line0 = it?.trim() } != null) {
+                        loop@ while (br.readLine().also { line0 = it?.trim() } != null) {
                             val line = line0!!
 
                             if (line.isEmpty()) {
@@ -277,10 +273,7 @@ object Dns {
                                 }
 
                                 // we have a NEW domain! add the PREVIOUS nameServers and start again.
-                                if (nameServerDomains[domainName] == null) {
-                                    nameServerDomains[domainName] = mutableListOf()
-                                }
-                                (nameServerDomains[domainName] as MutableList).addAll(nameServers)
+                                putIfAbsent(nameServerDomains, domainName, nameServers)
 
                                 nameServers = mutableListOf()
                                 domainName = line.substring(i)
@@ -295,11 +288,7 @@ object Dns {
                         }
 
                         // when done parsing the file, ALWAYS add the nameServer domains (since they have not been added yet)
-                        if (nameServerDomains[domainName] == null) {
-                            nameServerDomains[domainName] = mutableListOf()
-                        }
-                        (nameServerDomains[domainName] as MutableList).addAll(nameServers)
-
+                        putIfAbsent(nameServerDomains, domainName, nameServers)
                         return Pair(true, nameServerDomains)
                     }
                 }
@@ -488,5 +477,43 @@ object Dns {
             ++o
         }
         return -1
+    }
+
+    private fun putIfAbsent(
+        nameServerDomains: MutableMap<String, List<InetSocketAddress>>,
+        domainName: String,
+        nameServer: InetSocketAddress
+    ) {
+        var list = nameServerDomains[domainName]
+        if (list == null) {
+            list = mutableListOf()
+            nameServerDomains[domainName] = list
+        }
+
+        (list as MutableList)
+        if (!list.contains(nameServer)) {
+            list.add(nameServer)
+        }
+    }
+
+    private fun putIfAbsent(
+        nameServerDomains: MutableMap<String, List<InetSocketAddress>>,
+        domainName: String,
+        nameServers: List<InetSocketAddress>
+    ) {
+        var list = nameServerDomains[domainName]
+        if (list == null) {
+            list = mutableListOf()
+            nameServerDomains[domainName] = list
+        }
+
+        (list as MutableList)
+        nameServers.forEach {
+            if (!list.contains(it)) {
+                list.add(it)
+            }
+        }
+
+        nameServers
     }
 }
