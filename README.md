@@ -21,19 +21,18 @@ Maven Info
     <dependency>
       <groupId>com.dorkbox</groupId>
       <artifactId>NetworkUtils</artifactId>
-      <version>1.0</version>
+      <version>2.1</version>
     </dependency>
 </dependencies>
 ```
 
 Gradle Info
----------
-````
+```
 dependencies {
     ...
-    compile 'com.dorkbox:NetworkUtils:1.0'
+    compile 'com.dorkbox:NetworkUtils:2.1'
 }
-````
+```
 
 License
 ---------
