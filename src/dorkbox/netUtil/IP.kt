@@ -419,4 +419,28 @@ object IP {
             IPv6.fromString(ip)
         }
     }
+
+    /**
+     * Truncates an address to the specified number of bits.  For example,
+     * truncating the address 10.1.2.3 to 8 bits would yield 10.0.0.0.
+     *
+     * @param address The source address
+     * @param maskLength The number of bits to truncate the address to.
+     */
+    fun truncate(address: InetAddress, maskLength: Int): InetAddress? {
+        return if (address is Inet4Address) {
+            IPv4.truncate(address, maskLength)
+        } else {
+            IPv6.truncate(address as Inet6Address, maskLength)
+        }
+    }
+
+    /**
+     * Takes a [String] and parses it to see if it is a valid IPv4/6 address.
+     *
+     * @return true, if the string represents an IPv4/6 address in dotted notation, false otherwise
+     */
+    fun isValid(ip: String): Boolean {
+        return IPv4.isValid(ip) || IPv6.isValid(ip)
+    }
 }
