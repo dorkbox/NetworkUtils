@@ -111,10 +111,9 @@ object ResolveConf {
                             try {
                                 address = dns.Address.toAddress()
                                 if (address is Inet4Address || !address.isSiteLocalAddress) {
-
                                     putIfAbsent(nameServerDomains, Dns.DEFAULT_SEARCH_DOMAIN, Common.socketAddress(address, 53))
                                 } else {
-                                    Common.logger.debug(
+                                    Common.logger.trace(
                                         "Skipped site-local IPv6 server address {} on adapter index {}",
                                         address,
                                         result.IfIndex
