@@ -20,29 +20,29 @@ import org.junit.Test
 
 class DnsTest {
     @Test
-    fun testLanAddress() {
+    fun lanAddress() {
         Assert.assertNotNull(IP.lanAddress())
     }
 
     @Test
-    fun testPublicViaHttpAddress() {
+    fun publicViaHttpAddress() {
         val publicIpViaHttp = IP.publicIpViaHttp()
         Assert.assertNotNull(publicIpViaHttp)
 //        println(IP.fromString(publicIpViaHttp!!))
     }
 
     @Test
-    fun testDnsNameServers() {
+    fun dnsNameServers() {
         Assert.assertTrue(Dns.defaultNameServers.isNotEmpty())
     }
 
     @Test
-    fun testDnsNdots() {
+    fun dnsNdots() {
         Assert.assertTrue(Dns.numberDots >= 1)
     }
 
     @Test
-    fun testLocalhost() {
+    fun localhost() {
         Assert.assertNotNull(IP.LOCALHOST)
     }
 }

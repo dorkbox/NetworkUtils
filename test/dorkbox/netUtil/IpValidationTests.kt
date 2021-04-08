@@ -582,6 +582,18 @@ class IpValidationTests {
     }
 
     @Test
+    fun testAddressLength() {
+        Assert.assertEquals(4, IPv4.length)
+        Assert.assertEquals(16, IPv6.length)
+    }
+
+    @Test
+    fun testFamilyOf() {
+        Assert.assertTrue(IPv4.isFamily(InetAddress.getByName("192.168.0.1")))
+        Assert.assertTrue(IPv6.isFamily(InetAddress.getByName("1:2:3:4:5:6:7:8")))
+    }
+
+    @Test
     fun testLocalhost() {
         Assert.assertNotNull(IP.LOCALHOST)
     }

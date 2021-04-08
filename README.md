@@ -21,7 +21,7 @@ Maven Info
     <dependency>
       <groupId>com.dorkbox</groupId>
       <artifactId>NetworkUtils</artifactId>
-<version>2.3</version>
+      <version>2.3</version>
     </dependency>
 </dependencies>
 ```
@@ -30,11 +30,12 @@ Gradle Info
 ```
 dependencies {
     ...
-compile 'com.dorkbox:NetworkUtils:2.3'
+    implementation("com.dorkbox:NetworkUtils:2.3")
 }
 ```
 
 License
 ---------
-This project is © 2014 dorkbox llc, and is distributed under the terms of the Apache v2.0 License. See file "LICENSE" for further references.
+This project is © 2021 dorkbox llc, and is distributed under the terms of the Apache v2.0 License. See file "LICENSE" for further 
+references.
 
