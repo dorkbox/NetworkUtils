@@ -20,7 +20,6 @@ package dorkbox.netUtil
 import java.io.IOException
 import java.io.Writer
 import java.net.*
-import java.util.*
 import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.pow
@@ -295,6 +294,9 @@ object IPv4 {
                            ipv4WordToByte(ip, i + 1, ip.length))
     }
 
+    /**
+     * Creates an byte[] based on an ipAddressString. No error handling is performed here.
+     */
     fun toBytes(ip: String): ByteArray {
         var i: Int
 
@@ -311,6 +313,24 @@ object IPv4 {
         i = index
 
         return byteArrayOf(a, b, c, ipv4WordToByte(ip, i + 1, ip.length))
+    }
+
+    /**
+     * Creates an Inet4Address based on an ip string. No error handling is performed here.
+     */
+    fun toAddress(ip: String): Inet4Address {
+        return InetAddress.getByAddress(ip, toBytes(ip)) as Inet4Address
+    }
+
+    /**
+     * Creates an Inet4Address based on an ip string. No error handling is performed here.
+     */
+    fun toAddressOrNull(ip: String): Inet4Address? {
+        if (!isValid(ip)) {
+            return null
+        }
+
+        return InetAddress.getByAddress(ip, toBytes(ip)) as Inet4Address
     }
 
     private fun decimalDigit(str: CharSequence, pos: Int): Int {
@@ -334,9 +354,10 @@ object IPv4 {
         } else (ret * 10 + decimalDigit(ip, newFrom)).toByte()
     }
 
-    fun findFreeSubnet24(): ByteArray? {
-        Common.logger.info("Scanning for available cidr...")
-
+    /**
+     * Finds the first available subnet (as CIDR) with a corresponding gateway
+     */
+    fun findFreeSubnet24Cidr(): ByteArray? {
         // have to find a free cidr
         // start with 10.x.x.x /24 and just march through starting at 0 -> 200 for each, ping to see if there is a gateway (should be)
         // and go from there.

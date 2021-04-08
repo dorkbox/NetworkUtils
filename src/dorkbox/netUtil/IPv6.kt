@@ -17,12 +17,7 @@
 
 package dorkbox.netUtil
 
-import java.net.Inet4Address
-import java.net.Inet6Address
-import java.net.InetAddress
-import java.net.NetworkInterface
-import java.net.SocketException
-import java.net.UnknownHostException
+import java.net.*
 
 /**
  * A class that holds a number of network-related constants, also from:
@@ -521,7 +516,7 @@ object IPv6 {
     }
 
     /**
-     * Creates an byte[] based on an ipAddressString. No error handling is performed here.
+     * Creates an byte[] based on an ip string. No error handling is performed here.
      */
     fun toBytesOrNull(ipAddress: String): ByteArray? {
         if (isValid(ipAddress)) {
@@ -530,8 +525,9 @@ object IPv6 {
 
         return null
     }
+
     /**
-     * Creates an byte[] based on an ipAddressString. No error handling is performed here.
+     * Creates an byte[] based on an ip string.
      */
     fun toBytes(ipAddress: String): ByteArray {
         // always return a byte array
@@ -547,6 +543,23 @@ object IPv6 {
         return fromString(fixedIp)?.address ?: ByteArray(32)
     }
 
+    /**
+     * Creates an Inet6Address based on an ipAddressString.
+     */
+    fun toAddressOrNull(ip: String): Inet6Address? {
+        if (!isValid(ip)) {
+            return null
+        }
+
+        return toAddress(ip)
+    }
+
+    /**
+     * Creates an Inet6Address based on an ipAddressString. No error handling is performed here.
+     */
+    fun toAddress(ip: String): Inet6Address {
+        return InetAddress.getByAddress(ip, toBytes(ip)) as Inet6Address
+    }
 
     /**
      * Returns the [String] representation of an [InetAddress].
