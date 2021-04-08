@@ -2,7 +2,6 @@ package dorkbox.netUtil
 
 import dorkbox.executor.Executor
 import java.io.File
-import java.util.*
 
 /**
  *
@@ -11,7 +10,7 @@ object NameSpace {
     /**
      * Gets the version number.
      */
-    const val version = "2.2"
+    const val version = "2.3"
 
     object Route {
         fun flush(nameSpace: String) {

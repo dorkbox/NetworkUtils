@@ -19,7 +19,7 @@ object Mac {
     /**
      * Gets the version number.
      */
-    const val version = "2.2"
+    const val version = "2.3"
 
     enum class MacDelimiter(val delimiter: String) {
         COLON(":"),

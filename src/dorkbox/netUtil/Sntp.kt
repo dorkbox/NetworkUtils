@@ -20,7 +20,7 @@ object Sntp {
     /**
      * Gets the version number.
      */
-    const val version = "2.2"
+    const val version = "2.3"
 
     /**
      * SNTP client for retrieving time.

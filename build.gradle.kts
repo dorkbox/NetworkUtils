@@ -32,7 +32,7 @@ plugins {
 
     id("com.dorkbox.GradleUtils") version "1.17"
     id("com.dorkbox.Licensing") version "2.5.5"
-    id("com.dorkbox.VersionUpdate") version "2.2"
+    id("com.dorkbox.VersionUpdate") version "2.3"
     id("com.dorkbox.GradlePublish") version "1.10"
 //    id("com.dorkbox.GradleModuleInfo") version "1.1"
 
@@ -43,7 +43,7 @@ object Extras {
     // set for the project
     const val description = "Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)"
     const val group = "com.dorkbox"
-    const val version = "2.1"
+    const val version = "2.3"
 
     // set as project.ext
     const val name = "NetworkUtils"

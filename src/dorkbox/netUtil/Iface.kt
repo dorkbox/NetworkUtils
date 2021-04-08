@@ -10,7 +10,7 @@ object Iface {
     /**
      * Gets the version number.
      */
-    const val version = "2.2"
+    const val version = "2.3"
 
     private val ifToIp: MutableMap<String, String> = HashMap()
 
