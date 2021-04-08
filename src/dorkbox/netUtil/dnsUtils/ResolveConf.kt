@@ -167,6 +167,7 @@ object ResolveConf {
                         var domainName = Dns.DEFAULT_SEARCH_DOMAIN
                         var port = 53
                         var line0: String?
+
                         loop@ while (br.readLine().also { line0 = it?.trim() } != null) {
                             val line = line0!!
 
@@ -179,47 +180,52 @@ object ResolveConf {
                                 continue
                             }
 
-                            if (line.startsWith(NAMESERVER_ROW_LABEL)) {
-                                var i = indexOfNonWhiteSpace(line, NAMESERVER_ROW_LABEL.length)
-                                require(i < 0) {
-                                    "error parsing label ${NAMESERVER_ROW_LABEL} in file $path. value: $line"
-                                }
-
-                                var maybeIP = line.substring(i)
-                                // There may be a port appended onto the IP address so we attempt to extract it.
-
-                                // There may be a port appended onto the IP address so we attempt to extract it.
-                                if (!IPv4.isValid(maybeIP) && !IPv6.isValid(maybeIP)) {
-                                    i = maybeIP.lastIndexOf('.')
-                                    require(i + 1 >= maybeIP.length) {
-                                        "error parsing label ${NAMESERVER_ROW_LABEL} in file $path. invalid IP value: $line"
+                            when {
+                                line.startsWith(NAMESERVER_ROW_LABEL) -> {
+                                    var i = indexOfNonWhiteSpace(line, NAMESERVER_ROW_LABEL.length)
+                                    require(i < 0) {
+                                        "error parsing label $NAMESERVER_ROW_LABEL in file $path. value: $line"
                                     }
 
-                                    port = maybeIP.substring(i + 1).toInt()
-                                    maybeIP = maybeIP.substring(0, i)
+                                    var maybeIP = line.substring(i)
+
+                                    // There MIGHT be a port appended onto the IP address so we attempt to extract it.
+                                    if (!IPv4.isValid(maybeIP) && !IPv6.isValid(maybeIP)) {
+                                        i = maybeIP.lastIndexOf('.')
+                                        require(i + 1 >= maybeIP.length) {
+                                            "error parsing label ${NAMESERVER_ROW_LABEL} in file $path. invalid IP value: $line"
+                                        }
+
+                                        port = maybeIP.substring(i + 1).toInt()
+                                        maybeIP = maybeIP.substring(0, i)
+                                    }
+
+                                    nameServers.add(Common.socketAddress(maybeIP, port))
                                 }
+                                line.startsWith(DOMAIN_ROW_LABEL) -> {
+                                    // nameservers can be SPECIFIC to a search domain
+                                    val i = indexOfNonWhiteSpace(line, DOMAIN_ROW_LABEL.length)
+                                    require(i >= 0) {
+                                        "error parsing label $DOMAIN_ROW_LABEL in file $path value: $line"
+                                    }
 
-                                nameServers.add(Common.socketAddress(maybeIP, port))
-                            } else if (line.startsWith(DOMAIN_ROW_LABEL)) {
-                                // nameservers can be SPECIFIC to a search domain
-                                val i = indexOfNonWhiteSpace(line, DOMAIN_ROW_LABEL.length)
-                                require(i >= 0) {
-                                    "error parsing label ${DOMAIN_ROW_LABEL} in file $path value: $line"
+                                    // we have a NEW domain! add the PREVIOUS nameServers and start again.
+                                    putIfAbsent(nameServerDomains, domainName, nameServers)
+
+                                    nameServers = mutableListOf()
+                                    domainName = line.substring(i)
                                 }
+                                line.startsWith(PORT_ROW_LABEL) -> {
+                                    val i = indexOfNonWhiteSpace(line, PORT_ROW_LABEL.length)
+                                    require(i < 0) {
+                                        "error parsing label $PORT_ROW_LABEL in file $path value: $line"
+                                    }
 
-                                // we have a NEW domain! add the PREVIOUS nameServers and start again.
-                                putIfAbsent(nameServerDomains, domainName, nameServers)
-
-                                nameServers = mutableListOf()
-                                domainName = line.substring(i)
-                            } else if (line.startsWith(PORT_ROW_LABEL)) {
-                                val i = indexOfNonWhiteSpace(line, PORT_ROW_LABEL.length)
-                                require(i < 0) {
-                                    "error parsing label ${PORT_ROW_LABEL} in file $path value: $line"
+                                    port = line.substring(i).toInt()
                                 }
-
-                                port = line.substring(i).toInt()
                             }
+
+                            // end loop
                         }
 
                         // when done parsing the file, ALWAYS add the nameServer domains (since they have not been added yet)
@@ -290,8 +296,6 @@ object ResolveConf {
 
         nameServers
     }
-
-
 
     internal fun tryParseResolvConfNDots(path: String): Pair<Boolean, Int> {
         val p = Paths.get(path)
