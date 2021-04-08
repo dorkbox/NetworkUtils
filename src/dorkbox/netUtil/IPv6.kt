@@ -229,17 +229,20 @@ object IPv6 {
 
                     // Verify this address is of the correct structure to contain an IPv4 address.
                     // It must be IPv4-Mapped or IPv4-Compatible
+                    // a valid one is, for example: 0000:0000:0000:0000:0000:0000:192.168.89.9
                     // (see https://tools.ietf.org/html/rfc4291#section-2.5.5).
                     val ipv4Start = i - wordLen
                     var j = ipv4Start - 2 // index of character before the previous ':'.
                     if (IPv4.isValidIPv4MappedChar(ip[j])) {
-                        if (!IPv4.isValidIPv4MappedChar(ip[j - 1])
-                            || !IPv4.isValidIPv4MappedChar(ip[j - 2])
-                            || !IPv4.isValidIPv4MappedChar(ip[j - 3])) {
+                        if (!IPv4.isValidIPv4MappedChar(ip[j - 1]) ||
+                            !IPv4.isValidIPv4MappedChar(ip[j - 2]) ||
+                            !IPv4.isValidIPv4MappedChar(ip[j - 3])) {
                             return false
                         }
+
                         j -= 5
                     }
+
                     while (j >= start) {
                         val tmpChar = ip[j]
                         if (tmpChar != '0' && tmpChar != ':') {
