@@ -292,8 +292,6 @@ object ResolveConf {
                 list.add(it)
             }
         }
-
-        nameServers
     }
 
     internal fun tryParseResolvConfNDots(path: String): Pair<Boolean, Int> {
