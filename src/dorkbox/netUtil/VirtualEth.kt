@@ -9,7 +9,7 @@ object VirtualEth {
     /**
      * Gets the version number.
      */
-    const val version = "2.1"
+    const val version = "2.2"
 
     fun add(host: String, guest: String) {
         if (Common.OS_LINUX) {

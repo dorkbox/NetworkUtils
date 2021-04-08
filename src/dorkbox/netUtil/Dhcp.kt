@@ -10,7 +10,7 @@ object Dhcp {
     /**
      * Gets the version number.
      */
-    const val version = "2.1"
+    const val version = "2.2"
 
     fun start(id: String, interfaceName: String) {
         if (Common.OS_LINUX) {

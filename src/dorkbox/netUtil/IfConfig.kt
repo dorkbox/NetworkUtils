@@ -9,7 +9,7 @@ object IfConfig {
     /**
      * Gets the version number.
      */
-    const val version = "2.1"
+    const val version = "2.2"
 
     fun assignMac(interfaceName: String, interfaceMac: String) {
         if (Common.OS_LINUX) {

@@ -38,7 +38,7 @@ object IPv4 {
     /**
      * Gets the version number.
      */
-    const val version = "2.1"
+    const val version = "2.2"
 
     /**
      * Returns `true` if IPv4 should be used even if the system supports both IPv4 and IPv6. Setting this

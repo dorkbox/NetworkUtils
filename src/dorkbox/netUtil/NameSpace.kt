@@ -11,7 +11,7 @@ object NameSpace {
     /**
      * Gets the version number.
      */
-    const val version = "2.1"
+    const val version = "2.2"
 
     object Route {
         fun flush(nameSpace: String) {
