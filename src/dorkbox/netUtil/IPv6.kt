@@ -139,6 +139,18 @@ object IPv6 {
     }
 
     /**
+     * the length of an address in this particular family.
+     */
+    val length = 16
+
+    /**
+     * @return if the specified address is of this family type
+     */
+    fun isFamily(address: InetAddress) : Boolean {
+        return address is Inet6Address
+    }
+
+    /**
      * Takes a [String] and parses it to see if it is a valid IPV6 address.
      *
      * @return true, if the string represents an IPV6 address, false otherwise
@@ -573,7 +585,6 @@ object IPv6 {
      * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
      *
      *
-     *
      * The output does not include Scope ID.
      *
      * @param bytes [InetAddress] to be converted to an address string
@@ -596,15 +607,54 @@ object IPv6 {
      * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
      *
      *
+     * The output does not include Scope ID.
+     *
+     * @param ints [InetAddress] to be converted to an address string
+     *
+     * @return `String` containing the text-formatted IP address
+     */
+    fun toString(ints: IntArray): String {
+        return toString(ints, 0)
+    }
+
+    /**
+     * Returns the [String] representation of an [InetAddress].
+     *
+     *  * Inet4Address results are identical to [InetAddress.getHostAddress]
+     *  * Inet6Address results adhere to
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4) if
+     * `ipv4Mapped` is false.  If `ipv4Mapped` is true then "IPv4 mapped" format
+     * from [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) will be supported.
+     * The compressed result will always obey the compression rules defined in
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
      *
      * The output does not include Scope ID.
      *
      * @param bytes [InetAddress] to be converted to an address string
-     *
-     * @return `String` containing the text-formatted IP address
+     * @param buf the StringBuilder to build the address into
      */
-    fun toString(bytes: ByteArray, offset: Int): String {
-        return toAddressString(bytes, offset, false)
+    fun toString(bytes: ByteArray, buf: StringBuilder) {
+        toString(bytes, 0, buf)
+    }
+
+    /**
+     * Returns the [String] representation of an [InetAddress].
+     *
+     *  * Inet4Address results are identical to [InetAddress.getHostAddress]
+     *  * Inet6Address results adhere to
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4) if
+     * `ipv4Mapped` is false.  If `ipv4Mapped` is true then "IPv4 mapped" format
+     * from [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) will be supported.
+     * The compressed result will always obey the compression rules defined in
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     *
+     * The output does not include Scope ID.
+     *
+     * @param ints [InetAddress] to be converted to an address string
+     * @param buf the StringBuilder to build the address into
+     */
+    fun toString(ints: IntArray, buf: StringBuilder) {
+        toString(ints, 0, buf)
     }
 
     /**
@@ -619,26 +669,141 @@ object IPv6 {
      * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
      *
      *
+     * The output does not include Scope ID.
+     *
+     * @param bytes [InetAddress] to be converted to an address string
+     *
+     * @return `String` containing the text-formatted IP address
+     */
+    fun toString(bytes: ByteArray, offset: Int): String {
+        val buf = StringBuilder(IPV6_MAX_CHAR_COUNT)
+        toAddressString(bytes, offset, false, buf)
+        return buf.toString()
+    }
+
+    /**
+     * Returns the [String] representation of an [InetAddress].
+     *
+     *  * Inet4Address results are identical to [InetAddress.getHostAddress]
+     *  * Inet6Address results adhere to
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4) if
+     * `ipv4Mapped` is false.  If `ipv4Mapped` is true then "IPv4 mapped" format
+     * from [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) will be supported.
+     * The compressed result will always obey the compression rules defined in
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     *
+     *
+     * The output does not include Scope ID.
+     *
+     * @param ints [InetAddress] to be converted to an address string
+     *
+     * @return `String` containing the text-formatted IP address
+     */
+    fun toString(ints: IntArray, offset: Int): String {
+        val buf = StringBuilder(IPV6_MAX_CHAR_COUNT)
+        toAddressString(ints, offset, false, buf)
+        return buf.toString()
+    }
+
+    /**
+     * Returns the [String] representation of an [InetAddress].
+     *
+     *  * Inet4Address results are identical to [InetAddress.getHostAddress]
+     *  * Inet6Address results adhere to
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4) if
+     * `ipv4Mapped` is false.  If `ipv4Mapped` is true then "IPv4 mapped" format
+     * from [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) will be supported.
+     * The compressed result will always obey the compression rules defined in
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     *
+     *
+     * The output does not include Scope ID.
+     *
+     * @param bytes [InetAddress] to be converted to an address string
+     * @param offset the offset into the array to start
+     * @param buf the StringBuilder to build the address into
+     */
+    fun toString(bytes: ByteArray, offset: Int, buf: StringBuilder) {
+        toAddressString(bytes, offset, false, buf)
+    }
+
+    /**
+     * Returns the [String] representation of an [InetAddress].
+     *
+     *  * Inet4Address results are identical to [InetAddress.getHostAddress]
+     *  * Inet6Address results adhere to
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4) if
+     * `ipv4Mapped` is false.  If `ipv4Mapped` is true then "IPv4 mapped" format
+     * from [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) will be supported.
+     * The compressed result will always obey the compression rules defined in
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     *
+     *
+     * The output does not include Scope ID.
+     *
+     * @param ints [InetAddress] to be converted to an address string
+     * @param offset the offset into the array to start
+     * @param buf the StringBuilder to build the address into
+     */
+    fun toString(ints: IntArray, offset: Int, buf: StringBuilder) {
+        toAddressString(ints, offset, false, buf)
+    }
+
+    /**
+     * Returns the [String] representation of an [InetAddress].
+     *
+     *  * Inet4Address results are identical to [InetAddress.getHostAddress]
+     *  * Inet6Address results adhere to
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4) if
+     * `ipv4Mapped` is false.  If `ipv4Mapped` is true then "IPv4 mapped" format
+     * from [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) will be supported.
+     * The compressed result will always obey the compression rules defined in
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     *
      *
      * The output does not include Scope ID.
      *
      * @param ip [InetAddress] to be converted to an address string
-     * @param ipv4Mapped
-     *
-     *  * `true` to stray from strict rfc 5952 and support the "IPv4 mapped" format
+     * @param ipv4Mapped * `true` to stray from strict rfc 5952 and support the "IPv4 mapped" format
      * defined in [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) while still
-     * following the updated guidelines in
-     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
-     *
-     *  * `false` to strictly follow rfc 5952
+     * following the updated guidelines in [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     * `false` to strictly follow rfc 5952
      *
      * @return `String` containing the text-formatted IP address
      */
     fun toString(ip: Inet6Address, ipv4Mapped: Boolean = false): String {
-        return toAddressString(ip.address, 0, ipv4Mapped)
+        val buf = StringBuilder(IPV6_MAX_CHAR_COUNT)
+        toAddressString(ip.address, 0, ipv4Mapped, buf)
+        return buf.toString()
     }
 
-    private fun toAddressString(bytes: ByteArray, offset: Int, ipv4Mapped: Boolean): String {
+    /**
+     * Returns the [String] representation of an [InetAddress].
+     *
+     *  * Inet4Address results are identical to [InetAddress.getHostAddress]
+     *  * Inet6Address results adhere to
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4) if
+     * `ipv4Mapped` is false.  If `ipv4Mapped` is true then "IPv4 mapped" format
+     * from [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) will be supported.
+     * The compressed result will always obey the compression rules defined in
+     * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     *
+     *
+     * The output does not include Scope ID.
+     *
+     * @param ip [InetAddress] to be converted to an address string
+     * @param ipv4Mapped `true` to stray from strict rfc 5952 and support the "IPv4 mapped" format
+     * defined in [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) while still
+     * following the updated guidelines in [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
+     * `false` to strictly follow rfc 5952
+     *
+     * @param buf the StringBuilder to build the address into
+     */
+    fun toString(ip: Inet6Address, ipv4Mapped: Boolean = false, buf: StringBuilder) {
+        toAddressString(ip.address, 0, ipv4Mapped, buf)
+    }
+
+    private fun toAddressString(bytes: ByteArray, offset: Int, ipv4Mapped: Boolean, buf: StringBuilder) {
         val words = IntArray(IPV6_WORD_COUNT)
         var i: Int
         val end = offset + words.size
@@ -686,13 +851,12 @@ object IPv6 {
 
         // Translate to string taking into account longest consecutive 0s
         val shortestEnd = shortestStart + shortestLength
-        val b = StringBuilder(IPV6_MAX_CHAR_COUNT)
         if (shortestEnd < 0) { // Optimization when there is no compressing needed
-            b.append(Integer.toHexString(words[0]))
+            buf.append(Integer.toHexString(words[0]))
             i = 1
             while (i < words.size) {
-                b.append(':')
-                b.append(Integer.toHexString(words[i]))
+                buf.append(':')
+                buf.append(Integer.toHexString(words[i]))
                 ++i
             }
         }
@@ -700,11 +864,11 @@ object IPv6 {
             // Loop unroll the first index (so we don't constantly check i==0 cases in loop)
             val isIpv4Mapped: Boolean
             isIpv4Mapped = if (inRangeEndExclusive(0, shortestStart, shortestEnd)) {
-                b.append("::")
+                buf.append("::")
                 ipv4Mapped && shortestEnd == 5 && words[5] == 0xffff
             }
             else {
-                b.append(Integer.toHexString(words[0]))
+                buf.append(Integer.toHexString(words[0]))
                 false
             }
             i = 1
@@ -713,29 +877,125 @@ object IPv6 {
                     if (!inRangeEndExclusive(i - 1, shortestStart, shortestEnd)) {
                         // If the last index was not part of the shortened sequence
                         if (!isIpv4Mapped || i == 6) {
-                            b.append(':')
+                            buf.append(':')
                         }
                         else {
-                            b.append('.')
+                            buf.append('.')
                         }
                     }
                     if (isIpv4Mapped && i > 5) {
-                        b.append(words[i] shr 8)
-                        b.append('.')
-                        b.append(words[i] and 0xff)
+                        buf.append(words[i] shr 8)
+                        buf.append('.')
+                        buf.append(words[i] and 0xff)
                     }
                     else {
-                        b.append(Integer.toHexString(words[i]))
+                        buf.append(Integer.toHexString(words[i]))
                     }
                 }
                 else if (!inRangeEndExclusive(i - 1, shortestStart, shortestEnd)) {
                     // If we are in the shortened sequence and the last index was not
-                    b.append("::")
+                    buf.append("::")
                 }
                 ++i
             }
         }
-        return b.toString()
+    }
+    private fun toAddressString(ints: IntArray, offset: Int, ipv4Mapped: Boolean, buf: StringBuilder) {
+        val words = IntArray(IPV6_WORD_COUNT)
+        var i: Int
+        val end = offset + words.size
+        i = offset
+        while (i < end) {
+            words[i] = ints[i shl 1] shl 8 or (ints[(i shl 1) + 1])
+            ++i
+        }
+
+        // Find longest run of 0s, tie goes to first found instance
+        var currentStart = -1
+        var currentLength: Int
+        var shortestStart = -1
+        var shortestLength = 0
+        i = 0
+        while (i < words.size) {
+            if (words[i] == 0) {
+                if (currentStart < 0) {
+                    currentStart = i
+                }
+            }
+            else if (currentStart >= 0) {
+                currentLength = i - currentStart
+                if (currentLength > shortestLength) {
+                    shortestStart = currentStart
+                    shortestLength = currentLength
+                }
+                currentStart = -1
+            }
+            ++i
+        }
+        // If the array ends on a streak of zeros, make sure we account for it
+        if (currentStart >= 0) {
+            currentLength = i - currentStart
+            if (currentLength > shortestLength) {
+                shortestStart = currentStart
+                shortestLength = currentLength
+            }
+        }
+        // Ignore the longest streak if it is only 1 long
+        if (shortestLength == 1) {
+            shortestLength = 0
+            shortestStart = -1
+        }
+
+        // Translate to string taking into account longest consecutive 0s
+        val shortestEnd = shortestStart + shortestLength
+        if (shortestEnd < 0) { // Optimization when there is no compressing needed
+            buf.append(Integer.toHexString(words[0]))
+            i = 1
+            while (i < words.size) {
+                buf.append(':')
+                buf.append(Integer.toHexString(words[i]))
+                ++i
+            }
+        }
+        else { // General case that can handle compressing (and not compressing)
+            // Loop unroll the first index (so we don't constantly check i==0 cases in loop)
+            val isIpv4Mapped: Boolean
+            isIpv4Mapped = if (inRangeEndExclusive(0, shortestStart, shortestEnd)) {
+                buf.append("::")
+                ipv4Mapped && shortestEnd == 5 && words[5] == 0xffff
+            }
+            else {
+                buf.append(Integer.toHexString(words[0]))
+                false
+            }
+            i = 1
+            while (i < words.size) {
+                if (!inRangeEndExclusive(i, shortestStart, shortestEnd)) {
+                    if (!inRangeEndExclusive(i - 1, shortestStart, shortestEnd)) {
+                        // If the last index was not part of the shortened sequence
+                        if (!isIpv4Mapped || i == 6) {
+                            buf.append(':')
+                        }
+                        else {
+                            buf.append('.')
+                        }
+                    }
+                    if (isIpv4Mapped && i > 5) {
+                        buf.append(words[i] shr 8)
+                        buf.append('.')
+                        buf.append(words[i] and 0xff)
+                    }
+                    else {
+                        buf.append(Integer.toHexString(words[i]))
+                    }
+                }
+                else if (!inRangeEndExclusive(i - 1, shortestStart, shortestEnd)) {
+                    // If we are in the shortened sequence and the last index was not
+                    buf.append("::")
+                }
+                ++i
+            }
+        }
     }
 
     /**
@@ -783,5 +1043,41 @@ object IPv6 {
         }
 
         return oneCount == 1
+    }
+
+    /**
+     * Truncates an address to the specified number of bits.  For example,
+     * truncating the address 10.1.2.3 to 8 bits would yield 10.0.0.0.
+     *
+     * @param address The source address
+     * @param maskLength The number of bits to truncate the address to.
+     */
+    fun truncate(address: Inet6Address, maskLength: Int): InetAddress? {
+        val maxMaskLength = length * 8
+
+        require(!(maskLength < 0 || maskLength > maxMaskLength)) { "invalid mask length" }
+
+        if (maskLength == maxMaskLength) {
+            return address
+        }
+
+        val bytes = address.address
+        for (i in maskLength / 8 + 1 until bytes.size) {
+            bytes[i] = 0
+        }
+
+        val maskBits = maskLength % 8
+        var bitmask = 0
+        for (i in 0 until maskBits) {
+            bitmask = bitmask or (1 shl 7 - i)
+        }
+
+        bytes[maskLength / 8] = (bytes[maskLength / 8].toInt() and bitmask).toByte()
+
+        return try {
+            InetAddress.getByAddress(bytes)
+        } catch (e: UnknownHostException) {
+            throw IllegalArgumentException("invalid address")
+        }
     }
 }

@@ -131,13 +131,24 @@ object IPv4 {
         }
     }
 
-    private val SLASH_REGEX = "\\.".toRegex()
+    /**
+     * the length of an address in this particular family.
+     */
+    val length = 4
 
+    private val SLASH_REGEX = "\\.".toRegex()
 
     private val private10 = toInt("10.0.0.0")
     private val private172 = toInt("172.16.0.0")
     private val private192 = toInt("192.168.0.0")
     private val loopback127 = toInt("127.0.0.0")
+
+    /**
+     * @return if the specified address is of this family type
+     */
+    fun isFamily(address: InetAddress) : Boolean {
+        return address is Inet4Address
+    }
 
     /**
      * Determines if this IP address is a private address or not.
@@ -295,7 +306,7 @@ object IPv4 {
     }
 
     /**
-     * Creates an byte[] based on an ipAddressString. No error handling is performed here.
+     * Creates an byte[] based on an ip Address String. No error handling is performed here.
      */
     fun toBytes(ip: String): ByteArray {
         var i: Int
@@ -313,6 +324,27 @@ object IPv4 {
         i = index
 
         return byteArrayOf(a, b, c, ipv4WordToByte(ip, i + 1, ip.length))
+    }
+
+    /**
+     * Creates an int[] based on an ip address String. No error handling is performed here.
+     */
+    fun toInts(ip: String): IntArray {
+        var i: Int
+
+        var index = ip.indexOf('.', 1)
+        val a = ipv4WordToInt(ip, 0, index)
+        i = index
+
+        index = ip.indexOf('.', index + 2)
+        val b = ipv4WordToInt(ip, i + 1, index)
+        i = index
+
+        index = ip.indexOf('.', index + 2)
+        val c = ipv4WordToInt(ip, i + 1, index)
+        i = index
+
+        return intArrayOf(a, b, c, ipv4WordToInt(ip, i + 1, ip.length))
     }
 
     /**
@@ -338,20 +370,27 @@ object IPv4 {
     }
 
     private fun ipv4WordToByte(ip: CharSequence, from: Int, toExclusive: Int): Byte {
+        return ipv4WordToInt(ip, from, toExclusive).toByte()
+    }
+
+    private fun ipv4WordToInt(ip: CharSequence, from: Int, toExclusive: Int): Int {
         var newFrom = from
+
         var ret = decimalDigit(ip, newFrom)
         newFrom++
 
         if (newFrom == toExclusive) {
-            return ret.toByte()
+            return ret
         }
 
         ret = ret * 10 + decimalDigit(ip, newFrom)
         newFrom++
 
         return if (newFrom == toExclusive) {
-            ret.toByte()
-        } else (ret * 10 + decimalDigit(ip, newFrom)).toByte()
+            ret
+        } else {
+            ret * 10 + decimalDigit(ip, newFrom)
+        }
     }
 
     /**
@@ -699,6 +738,9 @@ object IPv4 {
     }
 
 
+    /**
+     * Converts a byte array into an 32-bit integer
+     */
     fun toInt(ipBytes: ByteArray): Int {
         return ipBytes[0].toInt() shl 24 or
                 (ipBytes[1].toInt() shl 16) or
@@ -707,10 +749,18 @@ object IPv4 {
     }
 
     /**
-     * Converts a 32-bit integer into an IPv4 address.
+     * Converts a 32-bit integer into a dotted-quad IPv4 address.
      */
     fun toString(ipAddress: Int): String {
         val buf = StringBuilder(15)
+        toString(ipAddress, buf)
+        return buf.toString()
+    }
+
+    /**
+     * Converts a 32-bit integer into a dotted-quad IPv4 address.
+     */
+    fun toString(ipAddress: Int, buf: StringBuilder) {
         buf.append(ipAddress shr 24 and 0xFF)
         buf.append('.')
         buf.append(ipAddress shr 16 and 0xFF)
@@ -718,11 +768,21 @@ object IPv4 {
         buf.append(ipAddress shr 8 and 0xFF)
         buf.append('.')
         buf.append(ipAddress and 0xFF)
+    }
+
+    /**
+     * Converts a byte array into a dotted-quad IPv4 address.
+     */
+    fun toString(ipBytes: ByteArray): String {
+        val buf = StringBuilder(15)
+        toString(ipBytes, buf)
         return buf.toString()
     }
 
-    fun toString(ipBytes: ByteArray): String {
-        val buf = StringBuilder(15)
+    /**
+     * Converts a byte array into a dotted-quad IPv4 address.
+     */
+    fun toString(ipBytes: ByteArray, buf: StringBuilder) {
         buf.append(ipBytes[0].toInt() and 0xFF)
         buf.append('.')
         buf.append(ipBytes[1].toInt() and 0xFF)
@@ -730,7 +790,28 @@ object IPv4 {
         buf.append(ipBytes[2].toInt() and 0xFF)
         buf.append('.')
         buf.append(ipBytes[3].toInt() and 0xFF)
+    }
+
+    /**
+     * Converts an int array into a dotted-quad IPv4 address.
+     */
+    fun toString(ipInts: IntArray): String {
+        val buf = StringBuilder(15)
+        toString(ipInts, buf)
         return buf.toString()
+    }
+
+    /**
+     * Converts an int array into a dotted-quad IPv4 address.
+     */
+    fun toString(ipInts: IntArray, buf: StringBuilder) {
+        buf.append(ipInts[0])
+        buf.append('.')
+        buf.append(ipInts[1])
+        buf.append('.')
+        buf.append(ipInts[2])
+        buf.append('.')
+        buf.append(ipInts[3])
     }
 
     /**
@@ -821,6 +902,42 @@ object IPv4 {
             return fromStringUnsafe(ip)
         } else {
             null
+        }
+    }
+
+    /**
+     * Truncates an address to the specified number of bits.  For example,
+     * truncating the address 10.1.2.3 to 8 bits would yield 10.0.0.0.
+     *
+     * @param address The source address
+     * @param maskLength The number of bits to truncate the address to.
+     */
+    fun truncate(address: Inet4Address, maskLength: Int): InetAddress? {
+        val maxMaskLength = IPv6.length * 8
+
+        require(!(maskLength < 0 || maskLength > maxMaskLength)) { "invalid mask length" }
+
+        if (maskLength == maxMaskLength) {
+            return address
+        }
+
+        val bytes = address.address
+        for (i in maskLength / 8 + 1 until bytes.size) {
+            bytes[i] = 0
+        }
+
+        val maskBits = maskLength % 8
+        var bitmask = 0
+        for (i in 0 until maskBits) {
+            bitmask = bitmask or (1 shl 7 - i)
+        }
+
+        bytes[maskLength / 8] = (bytes[maskLength / 8].toInt() and bitmask).toByte()
+
+        return try {
+            InetAddress.getByAddress(bytes)
+        } catch (e: UnknownHostException) {
+            throw IllegalArgumentException("invalid address")
         }
     }
 }
