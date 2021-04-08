@@ -18,7 +18,8 @@ package dorkbox.netUtil.dnsUtils
 
 import dorkbox.netUtil.Common.OS_WINDOWS
 import dorkbox.netUtil.Common.logger
-import dorkbox.netUtil.IP.toBytes
+import dorkbox.netUtil.IPv4
+import dorkbox.netUtil.IPv6
 import java.io.*
 import java.net.Inet4Address
 import java.net.Inet6Address
@@ -89,12 +90,14 @@ object HostsFileParser {
      * @return a [HostsFileEntries]
      */
     fun parse(file: File, vararg charsets: Charset): HostsFileEntries {
+        val hostsFileEntries = HostsFileEntries()
+
         try {
             if (file.exists() && file.isFile) {
                 for (charset in charsets) {
                     BufferedReader(InputStreamReader(FileInputStream(file), charset)).use { reader ->
                         val entries = parse(reader)
-                        if (entries != HostsFileEntries()) {
+                        if (entries != hostsFileEntries) {
                             return entries
                         }
                     }
@@ -104,7 +107,7 @@ object HostsFileParser {
             logger.warn("Failed to load and parse hosts file at " + file.path, e)
         }
 
-        return HostsFileEntries()
+        return hostsFileEntries
     }
 
     /**
@@ -115,74 +118,70 @@ object HostsFileParser {
      * @return a [HostsFileEntries]
      */
     fun parse(reader: Reader): HostsFileEntries {
-        val buff = BufferedReader(reader)
 
-        return try {
-            val ipv4Entries = mutableMapOf<String, Inet4Address>()
-            val ipv6Entries = mutableMapOf<String, Inet6Address>()
+        val ipv4Entries = mutableMapOf<String, Inet4Address>()
+        val ipv6Entries = mutableMapOf<String, Inet6Address>()
 
-            var line: String
-            while (buff.readLine().also { line = it } != null) {
-                // remove comment
+        reader.useLines { lines ->
+            lines.map { line ->
+                // remove comments
                 val commentPosition = line.indexOf('#')
                 if (commentPosition != -1) {
-                    line = line.substring(0, commentPosition)
+                    line.substring(0, commentPosition)
+                } else {
+                    line
                 }
+            }.map { line ->
+                // trim lines
+                line.trim()
+            }.filter { line ->
                 // skip empty lines
-                line = line.trim { it <= ' ' }
-                if (line.isEmpty()) {
-                    continue
-                }
-
+                line.isNotEmpty()
+            }.map { line ->
                 // split
-                val lineParts: MutableList<String> = ArrayList()
+                val lineParts = mutableListOf<String>()
                 for (s in WHITESPACES.split(line)) {
                     if (s.isNotEmpty()) {
                         lineParts.add(s)
                     }
                 }
-
+                lineParts
+            }.filter { lineParts ->
                 // a valid line should be [IP, hostname, alias*]
-                if (lineParts.size < 2) {
-                    // skip invalid line
-                    continue
+                // skip invalid lines!
+                lineParts.size >= 2
+            }.forEach { lineParts ->
+                val ip = lineParts[0]
+                val ipBytes = when {
+                    IPv4.isValid(ip) -> IPv4.toBytes(ip)
+                    IPv6.isValid(ip) -> IPv6.toBytes(ip)
+                    else -> null
                 }
 
-                val ipBytes = toBytes(lineParts[0])
-                if (ipBytes.isEmpty()) {
-                    // skip invalid IP
-                    continue
-                }
-
-                // loop over hostname and aliases
-                for (i in 1 until lineParts.size) {
-                    val hostname = lineParts[i]
-                    val hostnameLower = hostname.toLowerCase(Locale.ENGLISH)
-                    val address = InetAddress.getByAddress(hostname, ipBytes)
-                    if (address is Inet4Address) {
-                        val previous = ipv4Entries.put(hostnameLower, address)
-                        if (previous != null) {
-                            // restore, we want to keep the first entry
-                            ipv4Entries[hostnameLower] = previous
-                        }
-                    } else {
-                        val previous = ipv6Entries.put(hostnameLower, address as Inet6Address)
-                        if (previous != null) {
-                            // restore, we want to keep the first entry
-                            ipv6Entries[hostnameLower] = previous
+                if (ipBytes != null) {
+                    // loop over hostname and aliases, skip invalid IP
+                    for (i in 1 until lineParts.size) {
+                        val hostname = lineParts[i]
+                        val hostnameLower = hostname.toLowerCase(Locale.ENGLISH)
+                        val address = InetAddress.getByAddress(hostname, ipBytes)
+                        if (address is Inet4Address) {
+                            val previous = ipv4Entries.put(hostnameLower, address)
+                            if (previous != null) {
+                                // restore, we want to keep the first entry
+                                ipv4Entries[hostnameLower] = previous
+                            }
+                        } else {
+                            val previous = ipv6Entries.put(hostnameLower, address as Inet6Address)
+                            if (previous != null) {
+                                // restore, we want to keep the first entry
+                                ipv6Entries[hostnameLower] = previous
+                            }
                         }
                     }
                 }
             }
-
-            HostsFileEntries(ipv4Entries, ipv6Entries)
-        } finally {
-            try {
-                buff.close()
-            } catch (e: IOException) {
-                logger
-                    .warn("Failed to close a reader", e)
-            }
         }
+
+        return HostsFileEntries(ipv4Entries, ipv6Entries)
     }
 }

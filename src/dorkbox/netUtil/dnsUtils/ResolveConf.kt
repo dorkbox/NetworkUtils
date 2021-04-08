@@ -5,8 +5,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinError
 import dorkbox.netUtil.Common
 import dorkbox.netUtil.Dns
-import dorkbox.netUtil.IPv4
-import dorkbox.netUtil.IPv6
+import dorkbox.netUtil.IP
 import dorkbox.netUtil.jna.windows.IPHlpAPI
 import dorkbox.netUtil.jna.windows.structs.IP_ADAPTER_ADDRESSES_LH
 import dorkbox.netUtil.jna.windows.structs.IP_ADAPTER_DNS_SERVER_ADDRESS_XP
@@ -189,7 +188,7 @@ object ResolveConf {
                                     var maybeIP = line.substring(i)
 
                                     // There MIGHT be a port appended onto the IP address so we attempt to extract it.
-                                    if (!IPv4.isValid(maybeIP) && !IPv6.isValid(maybeIP)) {
+                                    if (!IP.isValid(maybeIP)) {
                                         i = maybeIP.lastIndexOf('.')
                                         require(i + 1 >= maybeIP.length) {
                                             "error parsing label ${NAMESERVER_ROW_LABEL} in file $path. invalid IP value: $line"

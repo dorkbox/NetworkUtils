@@ -22,4 +22,24 @@ import java.net.Inet6Address
 /**
  * A container of hosts file entries
  */
-data class HostsFileEntries(val ipv4Entries: Map<String, Inet4Address> = emptyMap(), val ipv6Entries: Map<String, Inet6Address> = emptyMap())
+data class HostsFileEntries(val ipv4Entries: Map<String, Inet4Address> = emptyMap(),
+                            val ipv6Entries: Map<String, Inet6Address> = emptyMap()) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as HostsFileEntries
+
+        if (ipv4Entries != other.ipv4Entries) return false
+        if (ipv6Entries != other.ipv6Entries) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = ipv4Entries.hashCode()
+        result = 31 * result + ipv6Entries.hashCode()
+        return result
+    }
+}
