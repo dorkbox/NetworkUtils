@@ -18,7 +18,7 @@ object Dns {
     /**
      * Gets the version number.
      */
-    const val version = "2.3"
+    const val version = "2.4"
 
     const val DEFAULT_SEARCH_DOMAIN = ""
 
