@@ -145,12 +145,12 @@ tasks.jar.get().apply {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     // https://github.com/MicroUtils/kotlin-logging
     implementation("io.github.microutils:kotlin-logging:2.0.6")  // slick kotlin wrapper for slf4j
     implementation("org.slf4j:slf4j-api:1.7.30")
 
-    implementation("com.dorkbox:Executor:3.0")
+    implementation("com.dorkbox:Executor:3.1")
+    implementation("com.dorkbox:Updates:1.0")
 
     val jnaVersion = "5.8.0"
     implementation("net.java.dev.jna:jna:$jnaVersion")

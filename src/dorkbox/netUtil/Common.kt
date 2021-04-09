@@ -12,6 +12,11 @@ import java.security.PrivilegedAction
  * Network Utilities. MAC, IP, NameSpace, etc
  */
 internal object Common {
+    /**
+     * Gets the version number.
+     */
+    const val version = "2.3"
+
     val OS_LINUX: Boolean
     val OS_WINDOWS: Boolean
     val OS_MAC: Boolean
@@ -41,6 +46,9 @@ internal object Common {
             OS_WINDOWS = false
             OS_MAC = false
         }
+
+        // Add this project to the updates system, which verifies this class + UUID + version information
+        dorkbox.updates.Updates.add(Common::class.java, "956b308f207944af95928ef6282a46d7", version)
     }
 
 
