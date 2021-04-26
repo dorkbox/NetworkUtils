@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dorkbox.executor.stream.slf4j;
+package dorkbox.netUtil.jna;
 
 /**
  * Required for intellij to not complain regarding `module-info` for a multi-release jar.
