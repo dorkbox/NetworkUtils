@@ -32,7 +32,7 @@ object IPv6 {
     /**
      * Gets the version number.
      */
-    const val version = "2.4"
+    const val version = "2.5"
 
     /**
      * Maximum amount of value adding characters in between IPV6 separators

@@ -20,7 +20,7 @@ object IP {
     /**
      * Gets the version number.
      */
-    const val version = "2.4"
+    const val version = "2.5"
 
     /**
      * The [InetAddress] that represents the loopback address. If IPv6 stack is available, it will refer to

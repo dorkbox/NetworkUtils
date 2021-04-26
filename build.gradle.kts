@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import dorkbox.gradle.kotlin
 import java.time.Instant
 
 ///////////////////////////////
@@ -28,13 +27,10 @@ gradle.startParameter.warningMode = WarningMode.All
 
 
 plugins {
-    java
-
-    id("com.dorkbox.GradleUtils") version "1.17"
-    id("com.dorkbox.Licensing") version "2.5.5"
+    id("com.dorkbox.GradleUtils") version "2.6"
+    id("com.dorkbox.Licensing") version "2.6.1"
     id("com.dorkbox.VersionUpdate") version "2.3"
-    id("com.dorkbox.GradlePublish") version "1.10"
-//    id("com.dorkbox.GradleModuleInfo") version "1.1"
+    id("com.dorkbox.GradlePublish") version "1.11"
 
     kotlin("jvm") version "1.4.32"
 }
@@ -43,7 +39,7 @@ object Extras {
     // set for the project
     const val description = "Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)"
     const val group = "com.dorkbox"
-    const val version = "2.4"
+    const val version = "2.5"
 
     // set as project.ext
     const val name = "NetworkUtils"
@@ -59,10 +55,9 @@ object Extras {
 /////  assign 'Extras'
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
-GradleUtils.fixIntellijPaths()
-GradleUtils.defaultResolutionStrategy()
+GradleUtils.defaults()
 GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
-
+GradleUtils.jpms(JavaVersion.VERSION_1_9)
 
 licensing {
     license(License.APACHE_2) {
@@ -86,47 +81,6 @@ licensing {
     }
 }
 
-
-sourceSets {
-    main {
-        java {
-            setSrcDirs(listOf("src"))
-
-            // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.java")
-        }
-
-        kotlin {
-            setSrcDirs(listOf("src"))
-
-            // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.java", "**/*.kt")
-        }
-    }
-
-    test {
-        java {
-            setSrcDirs(listOf("test"))
-
-            // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.java")
-        }
-
-        kotlin {
-            setSrcDirs(listOf("test"))
-
-            // want to include java files for the source. 'setSrcDirs' resets includes...
-            include("**/*.java", "**/*.kt")
-        }
-    }
-}
-
-repositories {
-    mavenLocal() // this must be first!
-    jcenter()
-}
-
-
 tasks.jar.get().apply {
     manifest {
         // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
@@ -139,26 +93,22 @@ tasks.jar.get().apply {
         attributes["Implementation-Title"] = "${Extras.group}.${Extras.id}"
         attributes["Implementation-Version"] = Extras.buildDate
         attributes["Implementation-Vendor"] = Extras.vendor
-
-        attributes["Automatic-Module-Name"] = Extras.id
     }
 }
 
 dependencies {
-    // https://github.com/MicroUtils/kotlin-logging
-    implementation("io.github.microutils:kotlin-logging:2.0.6")  // slick kotlin wrapper for slf4j
-    implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-api:1.8.0-beta4")
 
-    implementation("com.dorkbox:Executor:3.1")
-    implementation("com.dorkbox:Updates:1.0")
+    implementation("com.dorkbox:Executor:3.2")
+    implementation("com.dorkbox:Updates:1.1")
 
     val jnaVersion = "5.8.0"
-    implementation("net.java.dev.jna:jna:$jnaVersion")
-    implementation("net.java.dev.jna:jna-platform:$jnaVersion")
+    implementation("net.java.dev.jna:jna-jpms:$jnaVersion")
+    implementation("net.java.dev.jna:jna-platform-jpms:$jnaVersion")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("ch.qos.logback:logback-classic:1.2.3")
-    testImplementation("com.dorkbox:Utilities:1.9")
+    testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha4")
+    testImplementation("com.dorkbox:Utilities:1.10")
 }
 
 publishToSonatype {
