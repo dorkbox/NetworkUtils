@@ -27,7 +27,7 @@ import java.net.UnknownHostException
 class IpValidationTests {
     companion object {
         private val validIpV4Hosts = mapOf(
-//                "192.168.1.0" to "c0a80100",
+                "192.168.1.0" to "c0a80100",
                 "10.255.255.254" to "0afffffe",
                 "172.18.5.4" to "ac120504",
                 "0.0.0.0" to "00000000",
