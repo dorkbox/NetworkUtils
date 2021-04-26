@@ -1,27 +1,20 @@
-package dorkbox.netUtil.jna.windows.structs;
+package dorkbox.netUtil.jna.windows.structs
 
-import java.util.Arrays;
-import java.util.List;
+import com.sun.jna.Pointer
+import com.sun.jna.Structure
 
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+class SOCKADDR_IN(p: Pointer) : Structure(p) {
+    @JvmField var sin_family: Short = 0
+    @JvmField var sin_port: Short = 0
 
-public
-class SOCKADDR_IN extends Structure {
-    public short sin_family;
-    public short sin_port;
-    public byte[] sin_addr = new byte[4];
-    public byte[] sin_zero = new byte[8];
+    @JvmField var sin_addr = ByteArray(4)
+    @JvmField var sin_zero = ByteArray(8)
 
-    public
-    SOCKADDR_IN(Pointer p) {
-        super(p);
-        read();
+    init {
+        read()
     }
 
-    @Override
-    protected
-    List<String> getFieldOrder() {
-        return Arrays.asList("sin_family", "sin_port", "sin_addr", "sin_zero");
+    override fun getFieldOrder(): List<String> {
+        return listOf("sin_family", "sin_port", "sin_addr", "sin_zero")
     }
 }

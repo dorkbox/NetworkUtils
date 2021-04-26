@@ -1,18 +1,12 @@
-package dorkbox.netUtil.jna.windows.structs;
+package dorkbox.netUtil.jna.windows.structs
 
-import java.util.Arrays;
-import java.util.List;
+import com.sun.jna.Structure
 
-import com.sun.jna.Structure;
+class LUID : Structure() {
+    @JvmField var LowPart = 0
+    @JvmField var HighPart = 0
 
-public
-class LUID extends Structure {
-    public int LowPart;
-    public int HighPart;
-
-    @Override
-    protected
-    List<String> getFieldOrder() {
-        return Arrays.asList("LowPart", "HighPart");
+    override fun getFieldOrder(): List<String> {
+        return listOf("LowPart", "HighPart")
     }
 }

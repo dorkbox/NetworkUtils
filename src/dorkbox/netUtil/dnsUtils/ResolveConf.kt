@@ -70,7 +70,7 @@ object ResolveConf {
 
             // modified from: https://github.com/dnsjava/dnsjava/blob/master/src/main/java/org/xbill/DNS/config/WindowsResolverConfigProvider.java
             // The recommended method of calling the GetAdaptersAddresses function is to pre-allocate a 15KB working buffer
-            var buffer: Memory? = Memory(15 * 1024)
+            var buffer = Memory(15 * 1024)
             val size: com.sun.jna.ptr.IntByReference = com.sun.jna.ptr.IntByReference(0)
 
             val flags: Int = IPHlpAPI.GAA_FLAG_SKIP_UNICAST or
@@ -106,10 +106,11 @@ object ResolveConf {
                         var dns: IP_ADAPTER_DNS_SERVER_ADDRESS_XP? = result.FirstDnsServerAddress
                         while (dns != null) {
 
-                            var address: InetAddress
+                            var address: InetAddress?
                             try {
-                                address = dns.Address.toAddress()
-                                if (address is Inet4Address || !address.isSiteLocalAddress) {
+                                address = dns.Address?.toAddress()
+
+                                if (address is Inet4Address || !address!!.isSiteLocalAddress) {
                                     putIfAbsent(nameServerDomains, Dns.DEFAULT_SEARCH_DOMAIN, Common.socketAddress(address, 53))
                                 } else {
                                     Common.logger.trace(
