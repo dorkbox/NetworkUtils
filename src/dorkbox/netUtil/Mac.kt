@@ -3,7 +3,7 @@
 package dorkbox.netUtil
 
 import dorkbox.executor.Executor
-import mu.KLogger
+import org.slf4j.Logger
 import java.io.File
 import java.io.Writer
 import java.math.BigInteger
@@ -44,7 +44,7 @@ object Mac {
         synchronized(fakeMacsInUse) {}
     }
 
-    fun getMacAddress(ip: String, logger: KLogger? = null): String {
+    fun getMacAddress(ip: String, logger: Logger? = null): String {
         try {
             val mac = getMacAddressByte(ip, logger)
             if (mac == null) {
@@ -74,7 +74,7 @@ object Mac {
         return ""
     }
 
-    fun getMacAddressByte(ip: String, logger: KLogger? = null): ByteArray? {
+    fun getMacAddressByte(ip: String, logger: Logger? = null): ByteArray? {
         try {
             val addr = InetAddress.getByName(ip)
             val networkInterface = NetworkInterface.getByInetAddress(addr)

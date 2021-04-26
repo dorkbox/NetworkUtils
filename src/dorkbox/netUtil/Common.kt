@@ -2,7 +2,7 @@
 
 package dorkbox.netUtil
 
-import mu.KotlinLogging
+import org.slf4j.LoggerFactory
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.security.AccessController
@@ -52,7 +52,7 @@ internal object Common {
     }
 
 
-    internal val logger = KotlinLogging.logger("NetworkUtils")
+    internal val logger = LoggerFactory.getLogger("NetworkUtils")
 
     fun getBoolean(property: String, defaultValue: Boolean): Boolean {
         var value: String = System.getProperty(property, defaultValue.toString()) ?: return defaultValue

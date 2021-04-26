@@ -34,12 +34,8 @@ object IP {
     val LOOPBACK_IF: NetworkInterface
 
     init {
-        logger.trace {
-            "-Djava.net.preferIPv4Stack: ${IPv4.isPreferred}"
-        }
-        logger.trace {
-            "-Djava.net.preferIPv6Addresses: ${IPv6.isPreferred}"
-        }
+        logger.trace("-Djava.net.preferIPv4Stack: ${IPv4.isPreferred}")
+        logger.trace("-Djava.net.preferIPv6Addresses: ${IPv6.isPreferred}")
 
         // Retrieve the list of available network interfaces.
         val netInterfaces = mutableListOf<NetworkInterface>()
@@ -103,18 +99,14 @@ object IP {
 
         if (loopbackIface != null) {
             // Found the loopback interface with an INET address.
-            logger.trace {
-                "Loopback interface: ${loopbackIface.name} (${loopbackIface.displayName}, ${loopbackAddr!!.hostAddress})"
-            }
+            logger.trace("Loopback interface: ${loopbackIface.name} (${loopbackIface.displayName}, ${loopbackAddr!!.hostAddress})")
         } else {
             // Could not find the loopback interface, but we can't leave LOCALHOST as null.
             // Use LOCALHOST6 or LOCALHOST4, preferably the IPv6 one.
             if (loopbackAddr == null) {
                 try {
                     if (NetworkInterface.getByInetAddress(IPv6.LOCALHOST) != null) {
-                        logger.debug {
-                            "Using hard-coded IPv6 localhost address: ${IPv6.LOCALHOST}"
-                        }
+                        logger.debug("Using hard-coded IPv6 localhost address: ${IPv6.LOCALHOST}")
 
                         loopbackAddr = IPv6.LOCALHOST
                     }
@@ -122,16 +114,14 @@ object IP {
 
                 }
                 if (loopbackAddr == null) {
-                    logger.debug {
-                        "Using hard-coded IPv4 localhost address: ${IPv4.LOCALHOST}"
-                    }
+                    logger.debug("Using hard-coded IPv4 localhost address: ${IPv4.LOCALHOST}")
                     loopbackAddr = IPv4.LOCALHOST
                 }
             }
         }
 
         LOOPBACK_IF = loopbackIface!!
-        LOCALHOST = loopbackAddr!!
+        LOCALHOST = loopbackAddr
     }
 
     /**
