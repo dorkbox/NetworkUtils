@@ -158,13 +158,15 @@ object ResolveConf {
         val p = Paths.get(path)
         if (Files.exists(p)) {
             try {
+
                 FileReader(path).use { fr ->
                     BufferedReader(fr).use { br ->
                         var nameServers = mutableListOf<InetSocketAddress>()
                         val nameServerDomains = mutableMapOf<String, List<InetSocketAddress>>()
 
+                        @Suppress("unused")
+                        var port = 53  // this is really used, it's just that the kotlin compiler doesn't notice
                         var domainName = Dns.DEFAULT_SEARCH_DOMAIN
-                        var port = 53
                         var line0: String?
 
                         loop@ while (br.readLine().also { line0 = it?.trim() } != null) {
