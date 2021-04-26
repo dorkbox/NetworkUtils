@@ -148,7 +148,8 @@ object IP {
          *
          *
          * If this method cannot find a non-loopback address using this selection algorithm, it will fall back to
-         * calling and returning the result of JDK method `InetAddress.getLocalHost`.
+         * making an HTTP call and checking the address, and if that fails, by then calling and returning the result
+         * of JDK method `InetAddress.getLocalHost`.
          *
          *
          * @throws UnknownHostException If the LAN address of the machine cannot be found.
@@ -323,7 +324,6 @@ object IP {
      * [rfc 5952 section 4](http://tools.ietf.org/html/rfc5952#section-4)
      *
      *
-     *
      * The output does not include Scope ID.
      *
      * @param ip [InetAddress] to be converted to an address string
@@ -402,11 +402,11 @@ object IP {
      * @param ip [CharSequence] IP address to be converted to a [InetAddress]
      * @return [InetAddress] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun fromString(ip: String): InetAddress? {
+    fun toAddress(ip: String): InetAddress? {
         return if (IPv4.isValid(ip)) {
-            IPv4.fromStringUnsafe(ip)
+            IPv4.toAddressUnsafe(ip)
         } else {
-            IPv6.fromString(ip)
+            IPv6.toAddress(ip)
         }
     }
 

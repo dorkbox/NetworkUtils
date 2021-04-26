@@ -288,8 +288,8 @@ object IPv6 {
      * @param ip [CharSequence] IP address to be converted to a [Inet6Address]
      * @return [Inet6Address] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun fromString(ip: String): Inet6Address? {
-        return fromString(ip, true)
+    fun toAddress(ip: String): Inet6Address? {
+        return toAddress(ip, true)
     }
 
 
@@ -307,7 +307,7 @@ object IPv6 {
      * </ul>
      * @return [Inet6Address] representation of the [ip] or [null] if not a valid IP address.
      */
-    fun fromString(ip: String, ipv4Mapped: Boolean): Inet6Address? {
+    fun toAddress(ip: String, ipv4Mapped: Boolean): Inet6Address? {
         val bytes = getIPv6ByName(ip, ipv4Mapped) ?: return null
         return try {
             Inet6Address.getByAddress(null, bytes, -1)
@@ -536,7 +536,7 @@ object IPv6 {
      */
     fun toBytesOrNull(ipAddress: String): ByteArray? {
         if (isValid(ipAddress)) {
-            return fromString(ipAddress)?.address
+            return toAddress(ipAddress)?.address
         }
 
         return null
@@ -556,7 +556,7 @@ object IPv6 {
             fixedIp = fixedIp.substring(0, percentPos)
         }
 
-        return fromString(fixedIp)?.address ?: ByteArray(32)
+        return toAddress(fixedIp)?.address ?: ByteArray(32)
     }
 
     /**
@@ -583,24 +583,6 @@ object IPv6 {
     fun toIntUnsafe(ipAsString: String): BigInteger {
         val bytes = toBytes(ipAsString)
         return BigInteger(bytes)
-    }
-
-    /**
-     * Creates an Inet6Address based on an ipAddressString.
-     */
-    fun toAddressOrNull(ip: String): Inet6Address? {
-        if (!isValid(ip)) {
-            return null
-        }
-
-        return toAddress(ip)
-    }
-
-    /**
-     * Creates an Inet6Address based on an ipAddressString. No error handling is performed here.
-     */
-    fun toAddress(ip: String): Inet6Address {
-        return InetAddress.getByAddress(ip, toBytes(ip)) as Inet6Address
     }
 
     /**

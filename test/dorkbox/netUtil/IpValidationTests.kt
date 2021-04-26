@@ -618,7 +618,7 @@ class IpValidationTests {
         for (host in validIpV6Hosts.keys) {
             Assert.assertTrue(host, IPv6.isValid(host))
             if (host[0] != '[' && !host.contains("%")) {
-                Assert.assertNotNull(host, IPv6.fromString(host, true))
+                Assert.assertNotNull(host, IPv6.toAddress(host, true))
                 var hostMod = "[$host]"
                 Assert.assertTrue(hostMod, IPv6.isValid(hostMod))
                 hostMod = "$host%"
@@ -637,7 +637,7 @@ class IpValidationTests {
         }
         for (host in invalidIpV6Hosts.keys) {
             Assert.assertFalse(host, IPv6.isValid(host))
-            Assert.assertNull(host, IPv6.fromString(host))
+            Assert.assertNull(host, IPv6.toAddress(host))
             var hostMod = "[$host]"
             Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "$host%"
@@ -706,7 +706,7 @@ class IpValidationTests {
     @Test
     fun testIpv4MappedIp6GetByName() {
         for ((srcIp, dstIp) in ipv4MappedToIPv6AddressStrings) {
-            val inet6Address: Inet6Address? = IPv6.fromString(srcIp, true)
+            val inet6Address: Inet6Address? = IPv6.toAddress(srcIp, true)
             Assert.assertNotNull("$srcIp, $dstIp", inet6Address)
             assertEquals(srcIp, dstIp, IPv6.toString(inet6Address!!, true))
         }
@@ -715,10 +715,10 @@ class IpValidationTests {
     @Test
     fun testInvalidIpv4MappedIp6GetByName() {
         for (host in invalidIpV4Hosts.keys) {
-            Assert.assertNull(host, IPv4.fromString(host))
+            Assert.assertNull(host, IPv4.toAddress(host))
         }
         for (host in invalidIpV6Hosts.keys) {
-            Assert.assertNull(host, IPv6.fromString(host, true))
+            Assert.assertNull(host, IPv6.toAddress(host, true))
         }
     }
 

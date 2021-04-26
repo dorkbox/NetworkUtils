@@ -318,24 +318,6 @@ object IPv4 {
         return intArrayOf(a, b, c, ipv4WordToInt(ip, i + 1, ip.length))
     }
 
-    /**
-     * Creates an Inet4Address based on an ip string. No error handling is performed here.
-     */
-    fun toAddress(ip: String): Inet4Address {
-        return InetAddress.getByAddress(ip, toBytes(ip)) as Inet4Address
-    }
-
-    /**
-     * Creates an Inet4Address based on an ip string. No error handling is performed here.
-     */
-    fun toAddressOrNull(ip: String): Inet4Address? {
-        if (!isValid(ip)) {
-            return null
-        }
-
-        return InetAddress.getByAddress(ip, toBytes(ip)) as Inet4Address
-    }
-
     private fun decimalDigit(str: CharSequence, pos: Int): Int {
         return str[pos] - '0'
     }
@@ -836,7 +818,7 @@ object IPv4 {
      * @param ip [String] IP address to be converted to a [Inet4Address]
      * @return [Inet4Address] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun fromStringUnsafe(ip: String): Inet4Address {
+    fun toAddressUnsafe(ip: String): Inet4Address {
         val asBytes = toBytes(ip)
         return Inet4Address.getByAddress(null, asBytes) as Inet4Address
     }
@@ -849,9 +831,9 @@ object IPv4 {
      * @param ip [String] IP address to be converted to a [Inet4Address]
      * @return [Inet4Address] representation of the `ip` or `null` if not a valid IP address.
      */
-    fun fromString(ip: String): Inet4Address? {
+    fun toAddress(ip: String): Inet4Address? {
         return if (isValid(ip)) {
-            return fromStringUnsafe(ip)
+            return toAddressUnsafe(ip)
         } else {
             null
         }
