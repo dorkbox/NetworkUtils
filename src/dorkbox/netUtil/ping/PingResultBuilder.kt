@@ -1,7 +1,7 @@
 package dorkbox.netUtil.ping
 
 import dorkbox.netUtil.Common
-import dorkbox.netUtil.IPv4
+import dorkbox.netUtil.IP
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 import java.util.regex.Matcher
@@ -58,7 +58,7 @@ internal object PingResultBuilder {
                     listOf(
                         /* Windows */
                         ResultParser.of("Pinging (.*) with") { result, matcher ->
-                            result.host = IPv4.WILDCARD_SAFE.hostAddress // note: this is REALLY the host used for default traffic
+                            result.host = IP.lanAddress().hostAddress // note: this is REALLY the host used for lan traffic
                             result.ip = matcher.group(1)
                             result
                         },

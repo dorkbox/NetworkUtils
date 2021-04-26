@@ -103,35 +103,6 @@ object IPv4 {
     }
 
     /**
-     * Windows is unable to work with 0.0.0.0 directly, and if you use LOOPBACK, you might not be able to access the server from another
-     * machine.
-     *
-     * What this does is open a connection to 1.1.1.1 and see get the interface this traffic was on, and use that interface IP address
-     */
-    val WILDCARD_SAFE: Inet4Address by lazy {
-        if (Common.OS_WINDOWS) {
-            // silly windows can't work with 0.0.0.0, BUT we can't use loopback because we might need to reach this machine from a different host
-            // what we do is open a connection to 1.1.1.1 and see what interface this happened on, and this is used as the accessible
-            // interface
-            var ip = WILDCARD
-
-            runCatching {
-                Socket().use {
-                    it.connect(InetSocketAddress("1.1.1.1", 80))
-                    ip = it.localAddress as Inet4Address
-                }
-            }.onFailure {
-                Common.logger.error("Unable to determine outbound traffic local address. Using loopback instead.", it)
-            }
-
-            ip
-        } else {
-            // everyone else works correctly
-            WILDCARD
-        }
-    }
-
-    /**
      * the length of an address in this particular family.
      */
     val length = 4
