@@ -544,50 +544,25 @@ object IPv4 {
     }
 
     /**
-     * @param cidr the CIDR notation, ie: 24, 16, etc. That we want to convert into a netmask, as a SIGNED INTEGER (the bits are still
-     * correct, but to see this "as unix would", you must convert to an unsigned integer.
+     * @param cidrPrefix the CIDR notation, ie: /24, /16, etc that we want to convert into a netmask
      *
      * @return the netmask (as a signed int), or if there were errors, the default /0 netmask
      */
-    fun getCidrAsIntNetmask(cidr: Int): Int {
-        return when (cidr) {
-            32 -> -1
-            31 -> -2
-            30 -> -4
-            29 -> -8
-            28 -> -16
-            27 -> -32
-            26 -> -64
-            25 -> -128
-            24 -> -256
-            23 -> -512
-            22 -> -1024
-            21 -> -2048
-            20 -> -4096
-            19 -> -8192
-            18 -> -16384
-            17 -> -32768
-            16 -> -65536
-            15 -> -131072
-            14 -> -262144
-            13 -> -524288
-            12 -> -1048576
-            11 -> -2097152
-            10 -> -4194304
-            9 -> -8388608
-            8 -> -16777216
-            7 -> -33554432
-            6 -> -67108864
-            5 -> -134217728
-            4 -> -268435456
-            3 -> -536870912
-            2 -> -1073741824
-            1 -> -2147483648
-            else -> 0
-        }
+    fun cidrPrefixToSubnetMask(cidrPrefix: Int): Int {
+        /**
+         * Perform the shift on a long and downcast it to int afterwards.
+         * This is necessary to handle a cidrPrefix of zero correctly.
+         * The left shift operator on an int only uses the five least
+         * significant bits of the right-hand operand. Thus -1 << 32 evaluates
+         * to -1 instead of 0. The left shift operator applied on a long
+         * uses the six least significant bits.
+         *
+         * Also see https://github.com/netty/netty/issues/2767
+         */
+        return (-1L shl 32 - cidrPrefix and -0x1).toInt()
     }
 
-    fun getCidrFromMask(mask: String): Int {
+    fun cidrPrefixFromSubnetMask(mask: String): Int {
         return when (mask) {
             "255.255.255.255" -> 32
             "255.255.255.254" -> 31
@@ -739,13 +714,39 @@ object IPv4 {
 
 
     /**
-     * Converts a byte array into an 32-bit integer
+     * Converts a byte array into a 32-bit integer
      */
     fun toInt(ipBytes: ByteArray): Int {
         return ipBytes[0].toInt() shl 24 or
                 (ipBytes[1].toInt() shl 16) or
                 (ipBytes[2].toInt() shl 8) or
                 (ipBytes[3].toInt())
+    }
+
+    /**
+     * Converts an IP address into a 32-bit integer
+     */
+    fun toInt(ipAsString: String): Int {
+        return if (isValid(ipAsString)) {
+            toIntUnsafe(ipAsString)
+        } else {
+            0
+        }
+    }
+
+    /**
+     * Converts an IP address into a 32-bit integer, no validity checks are performed
+     */
+    fun toIntUnsafe(ipAsString: String): Int {
+        val bytes = toBytes(ipAsString)
+
+        var address = 0
+        for (element in bytes) {
+            address = address shl 8
+            address = address or (element.toInt() and 0xff)
+        }
+
+        return address
     }
 
     /**
@@ -854,26 +855,6 @@ object IPv4 {
                            (bytes shr 16 and 0xFF).toByte(),
                            (bytes shr 8 and 0xFF).toByte(),
                            (bytes and 0xFF).toByte())
-    }
-
-    fun toInt(ipAsString: String): Int {
-        return if (isValid(ipAsString)) {
-            toIntUnsafe(ipAsString)
-        } else {
-            0
-        }
-    }
-
-    fun toIntUnsafe(ipAsString: String): Int {
-        val bytes = toBytes(ipAsString)
-
-        var address = 0
-        for (element in bytes) {
-            address = address shl 8
-            address = address or (element.toInt() and 0xff)
-        }
-
-        return address
     }
 
     /**

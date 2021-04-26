@@ -17,6 +17,7 @@
 
 package dorkbox.netUtil
 
+import java.math.BigInteger
 import java.net.*
 
 /**
@@ -559,6 +560,32 @@ object IPv6 {
     }
 
     /**
+     * Converts a byte array into a 128-bit BigInteger
+     */
+    fun toInt(ipBytes: ByteArray): BigInteger {
+        return BigInteger(ipBytes)
+    }
+
+    /**
+     * Converts an IP address into a 128-bit BigInteger
+     */
+    fun toInt(ipAsString: String): BigInteger {
+        return if (isValid(ipAsString)) {
+            toIntUnsafe(ipAsString)
+        } else {
+            BigInteger(ByteArray(0))
+        }
+    }
+
+    /**
+     * Converts an IP address into a 128-bit BigInteger, no validity checks are performed
+     */
+    fun toIntUnsafe(ipAsString: String): BigInteger {
+        val bytes = toBytes(ipAsString)
+        return BigInteger(bytes)
+    }
+
+    /**
      * Creates an Inet6Address based on an ipAddressString.
      */
     fun toAddressOrNull(ip: String): Inet6Address? {
@@ -1082,5 +1109,14 @@ object IPv6 {
         } catch (e: UnknownHostException) {
             throw IllegalArgumentException("invalid address")
         }
+    }
+
+    /**
+     * @param cidrPrefix the CIDR notation, ie: /24, /16, etc that we want to convert into a netmask
+     *
+     * @return the netmask, or if there were errors, the default /0 netmask
+     */
+    fun cidrPrefixToSubnetMask(cidrPrefix: Int): BigInteger {
+        return MINUS_ONE.shiftLeft(128 - cidrPrefix)
     }
 }
