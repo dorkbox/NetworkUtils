@@ -16,7 +16,7 @@ class Ping {
         /**
          * Gets the version number.
          */
-        const val version = "2.5"
+        const val version = "2.6"
     }
 
     private val count = 4

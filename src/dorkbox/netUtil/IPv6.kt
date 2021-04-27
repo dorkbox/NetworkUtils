@@ -33,7 +33,10 @@ object IPv6 {
     /**
      * Gets the version number.
      */
-    const val version = "2.5"
+    const val version = "2.6"
+
+    // used for subnet mask info
+    private val MINUS_ONE = BigInteger.valueOf(-1)
 
     /**
      * Maximum amount of value adding characters in between IPV6 separators

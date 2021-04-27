@@ -10,7 +10,7 @@ object IPRoute {
     /**
      * Gets the version number.
      */
-    const val version = "2.5"
+    const val version = "2.6"
 
     private val reservedTable = StringBuilder(2048)
     private val tableNames: MutableMap<Int, String?> = HashMap(256)

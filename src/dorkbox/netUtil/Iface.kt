@@ -1,7 +1,6 @@
 package dorkbox.netUtil
 
 import dorkbox.executor.Executor
-import java.util.*
 
 /**
  *
@@ -10,7 +9,7 @@ object Iface {
     /**
      * Gets the version number.
      */
-    const val version = "2.5"
+    const val version = "2.6"
 
     private val ifToIp: MutableMap<String, String> = HashMap()
 

@@ -18,7 +18,7 @@ object Dns {
     /**
      * Gets the version number.
      */
-    const val version = "2.5"
+    const val version = "2.6"
 
     const val DEFAULT_SEARCH_DOMAIN = ""
 
@@ -101,3 +101,6 @@ object Dns {
         }
     }
 }
+
+
+//TODO add domain TLD, etc util tools
