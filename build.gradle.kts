@@ -32,14 +32,14 @@ plugins {
     id("com.dorkbox.VersionUpdate") version "2.3"
     id("com.dorkbox.GradlePublish") version "1.11"
 
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
 }
 
 object Extras {
     // set for the project
     const val description = "Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)"
     const val group = "com.dorkbox"
-    const val version = "2.6"
+    const val version = "2.7"
 
     // set as project.ext
     const val name = "NetworkUtils"
@@ -56,7 +56,9 @@ object Extras {
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
-GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
+GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
+    freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
+}
 GradleUtils.jpms(JavaVersion.VERSION_1_9)
 
 licensing {
