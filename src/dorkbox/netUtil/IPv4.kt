@@ -816,8 +816,9 @@ object IPv4 {
      * This method will treat all IPv4 type addresses as "IPv4 mapped" (see [.getByName])
      *
      * @param ip [String] IP address to be converted to a [Inet4Address]
-     * @return [Inet4Address] representation of the `ip` or `null` if not a valid IP address.
+     * @return [Inet4Address] representation of the `ip` or an exception if not a valid IP address.
      */
+    @Throws(UnknownHostException::class)
     fun toAddressUnsafe(ip: String): Inet4Address {
         val asBytes = toBytes(ip)
         return Inet4Address.getByAddress(null, asBytes) as Inet4Address

@@ -310,7 +310,7 @@ object IPv6 {
      * </ul>
      * @return [Inet6Address] representation of the [ip] or [null] if not a valid IP address.
      */
-    fun toAddress(ip: String, ipv4Mapped: Boolean): Inet6Address? {
+    fun toAddress(ip: String, ipv4Mapped: Boolean = true): Inet6Address? {
         val bytes = getIPv6ByName(ip, ipv4Mapped) ?: return null
         return try {
             Inet6Address.getByAddress(null, bytes, -1)
@@ -328,13 +328,12 @@ object IPv6 {
      * defined in [rfc 4291 section 2](http://tools.ietf.org/html/rfc4291#section-2.5.5) is supported.
      * @param ip [CharSequence] IP address to be converted to a [Inet6Address]
      * @param ipv4Mapped
-     *
      *  * `true` To allow IPv4 mapped inputs to be translated into [Inet6Address]
      *  * `false` Consider IPv4 mapped addresses as invalid.
      *
      * @return byte array representation of the `ip` or `null` if not a valid IP address.
      */
-    private fun getIPv6ByName(ip: CharSequence, ipv4Mapped: Boolean): ByteArray? {
+    private fun getIPv6ByName(ip: CharSequence, ipv4Mapped: Boolean = true): ByteArray? {
         val bytes = ByteArray(IPV6_BYTE_COUNT)
         val ipLength = ip.length
         var compressBegin = 0
