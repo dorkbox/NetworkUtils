@@ -37,7 +37,7 @@ object SocketUtils {
     /**
      * Gets the version number.
      */
-    const val version = "2.7"
+    const val version = "2.8"
 
     private val EMPTY = Collections.enumeration(emptyList<Any>())
 
