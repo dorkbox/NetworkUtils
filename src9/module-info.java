@@ -1,6 +1,6 @@
 module dorkbox.netutil {
     exports dorkbox.netUtil;
-    exports dorkbox.netUtil.dnsUtil;
+    exports dorkbox.netUtil.dnsUtils;
     exports dorkbox.netUtil.jna;
     exports dorkbox.netUtil.ping;
 
