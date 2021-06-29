@@ -28,7 +28,7 @@ gradle.startParameter.warningMode = WarningMode.All
 
 plugins {
     id("com.dorkbox.GradleUtils") version "2.6"
-    id("com.dorkbox.Licensing") version "2.6.1"
+    id("com.dorkbox.Licensing") version "2.8.1"
     id("com.dorkbox.VersionUpdate") version "2.3"
     id("com.dorkbox.GradlePublish") version "1.11"
 
@@ -68,17 +68,17 @@ licensing {
         author(Extras.vendor)
 
         extra("Netty", License.APACHE_2) {
-            it.copyright(2014)
-            it.author("The Netty Project")
-            it.url("https://netty.io/")
-            it.note("This product contains a modified portion of Netty Network Utils")
+            copyright(2014)
+            author("The Netty Project")
+            url("https://netty.io/")
+            note("This product contains a modified portion of Netty Network Utils")
         }
 
         extra("Apache Harmony", License.APACHE_2) {
-            it.copyright(2010)
-            it.author("The Apache Software Foundation")
-            it.url("http://archive.apache.org/dist/harmony/")
-            it.note("This product contains a modified portion of 'Apache Harmony', an open source Java SE")
+            copyright(2010)
+            author("The Apache Software Foundation")
+            url("http://archive.apache.org/dist/harmony/")
+            note("This product contains a modified portion of 'Apache Harmony', an open source Java SE")
         }
     }
 }

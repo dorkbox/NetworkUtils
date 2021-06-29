@@ -2,9 +2,6 @@ package dorkbox.netUtil
 
 import dorkbox.executor.Executor
 
-/**
- *
- */
 object VirtualEth {
     /**
      * Gets the version number.
