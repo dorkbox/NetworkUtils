@@ -19,14 +19,6 @@
          The Apache Software Foundation
        This product contains a modified portion of 'Apache Harmony', an open source Java SE
 
-     - Kotlin - 
-       [The Apache Software License, Version 2.0]
-       https://github.com/JetBrains/kotlin
-       Copyright 2020
-         JetBrains s.r.o. and Kotlin Programming Language contributors
-       Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
-       See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
-
      - SLF4J - Simple facade or abstraction for various logging frameworks
        [MIT License]
        http://www.slf4j.org
@@ -44,6 +36,14 @@
        https://github.com/twall/jna
        Copyright 2022
          Timothy Wall
+
+     - Kotlin - 
+       [The Apache Software License, Version 2.0]
+       https://github.com/JetBrains/kotlin
+       Copyright 2020
+         JetBrains s.r.o. and Kotlin Programming Language contributors
+       Kotlin Compiler, Test Data+Libraries, and Tools repository contain third-party code, to which different licenses may apply
+       See: https://github.com/JetBrains/kotlin/blob/master/license/README.md
 
      - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+
        [The Apache Software License, Version 2.0]
