@@ -7,7 +7,7 @@ object Arp {
     /**
      * Gets the version number.
      */
-    const val version = "2.8"
+    const val version = "2.9.1"
 
     // Now setup ARP Proxy for this interface (so ARP requests are answered correctly)
     fun proxyAdd(interfaceName: String) {

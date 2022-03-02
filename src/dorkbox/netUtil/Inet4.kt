@@ -24,7 +24,7 @@ object Inet4 {
     /**
      * Gets the version number.
      */
-    const val version = "2.8"
+    const val version = "2.9.1"
 
     /**
      * Returns the [Inet4Address] representation of a [String] IP or host address.
