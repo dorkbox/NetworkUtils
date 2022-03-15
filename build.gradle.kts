@@ -27,19 +27,19 @@ gradle.startParameter.warningMode = WarningMode.All
 
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "2.9"
-    id("com.dorkbox.Licensing") version "2.9.2"
+    id("com.dorkbox.GradleUtils") version "2.16"
+    id("com.dorkbox.Licensing") version "2.12"
     id("com.dorkbox.VersionUpdate") version "2.4"
-    id("com.dorkbox.GradlePublish") version "1.11"
+    id("com.dorkbox.GradlePublish") version "1.12"
 
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.6.10"
 }
 
 object Extras {
     // set for the project
     const val description = "Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)"
     const val group = "com.dorkbox"
-    const val version = "2.8"
+    const val version = "2.9.1"
 
     // set as project.ext
     const val name = "NetworkUtils"
@@ -99,18 +99,18 @@ tasks.jar.get().apply {
 }
 
 dependencies {
-    implementation("org.slf4j:slf4j-api:1.8.0-beta4")
+    api("org.slf4j:slf4j-api:1.8.0-beta4")
 
-    implementation("com.dorkbox:Executor:3.2")
-    implementation("com.dorkbox:Updates:1.1")
+    api("com.dorkbox:Executor:3.9")
+    api("com.dorkbox:Updates:1.1")
 
-    val jnaVersion = "5.8.0"
-    implementation("net.java.dev.jna:jna-jpms:$jnaVersion")
-    implementation("net.java.dev.jna:jna-platform-jpms:$jnaVersion")
+    val jnaVersion = "5.10.0"
+    api("net.java.dev.jna:jna-jpms:$jnaVersion")
+    api("net.java.dev.jna:jna-platform-jpms:$jnaVersion")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha4")
-    testImplementation("com.dorkbox:Utilities:1.10")
+    testImplementation("com.dorkbox:Utilities:1.16")
 }
 
 publishToSonatype {
