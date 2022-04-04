@@ -3,8 +3,16 @@ package dorkbox.netUtil
 import dorkbox.netUtil.Common.logger
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.net.*
-import java.util.regex.Pattern
+import java.net.Inet4Address
+import java.net.Inet6Address
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.NetworkInterface
+import java.net.Socket
+import java.net.SocketException
+import java.net.URL
+import java.net.UnknownHostException
+import java.util.regex.*
 
 /**
  * A class that holds a number of network-related constants, also from:
@@ -20,7 +28,7 @@ object IP {
     /**
      * Gets the version number.
      */
-    const val version = "2.9.1"
+    const val version = Common.version
 
     /**
      * The [InetAddress] that represents the loopback address. If IPv6 stack is available, it will refer to

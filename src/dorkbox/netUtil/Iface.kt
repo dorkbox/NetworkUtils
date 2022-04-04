@@ -9,7 +9,7 @@ object Iface {
     /**
      * Gets the version number.
      */
-    const val version = "2.9.1"
+    const val version = Common.version
 
     private val ifToIp: MutableMap<String, String> = HashMap()
 

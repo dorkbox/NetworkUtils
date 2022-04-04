@@ -24,7 +24,7 @@ object Inet6 {
     /**
      * Gets the version number.
      */
-    const val version = "2.9.1"
+    const val version = Common.version
 
     /**
      * Returns the [Inet6Address] representation of a [String] IP or host address.

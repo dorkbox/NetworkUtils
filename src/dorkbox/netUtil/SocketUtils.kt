@@ -16,7 +16,15 @@
 package dorkbox.netUtil
 
 import java.io.IOException
-import java.net.*
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.NetworkInterface
+import java.net.ServerSocket
+import java.net.Socket
+import java.net.SocketAddress
+import java.net.SocketException
+import java.net.SocketPermission
+import java.net.UnknownHostException
 import java.nio.channels.DatagramChannel
 import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
@@ -37,7 +45,7 @@ object SocketUtils {
     /**
      * Gets the version number.
      */
-    const val version = "2.9.1"
+    const val version = Common.version
 
     private val EMPTY = Collections.enumeration(emptyList<Any>())
 

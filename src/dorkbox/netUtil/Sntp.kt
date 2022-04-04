@@ -4,7 +4,7 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.*
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 /**
  * SNTP client for retrieving time.
@@ -20,7 +20,7 @@ object Sntp {
     /**
      * Gets the version number.
      */
-    const val version = "2.9.1"
+    const val version = Common.version
 
     /**
      * SNTP client for retrieving time.

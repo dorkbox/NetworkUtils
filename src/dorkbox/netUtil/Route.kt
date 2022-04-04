@@ -9,7 +9,7 @@ object Route {
     /**
      * Gets the version number.
      */
-    const val version = "2.9.1"
+    const val version = Common.version
 
     fun flush() {
         Executor.run("/sbin/ip", "route", "flush", "cache")
