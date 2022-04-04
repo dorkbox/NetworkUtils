@@ -10,7 +10,7 @@ import java.math.BigInteger
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.util.*
-import java.util.regex.Pattern
+import java.util.regex.*
 
 /**
  *
@@ -332,8 +332,7 @@ object Mac {
                 buf.append('0')
             }
 
-            buf.append(Integer.toHexString(b.toInt() and 0xFF)
-                           .toUpperCase())
+            buf.append(Integer.toHexString(b.toInt() and 0xFF).uppercase(Locale.ENGLISH))
         }
         return buf.toString()
     }

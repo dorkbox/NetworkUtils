@@ -20,13 +20,18 @@ import dorkbox.netUtil.Common.OS_WINDOWS
 import dorkbox.netUtil.Common.logger
 import dorkbox.netUtil.IPv4
 import dorkbox.netUtil.IPv6
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.Reader
 import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
 import java.nio.charset.Charset
 import java.util.*
-import java.util.regex.Pattern
+import java.util.regex.*
 
 /**
  * A parser for hosts files.
@@ -162,7 +167,7 @@ object HostsFileParser {
                     // loop over hostname and aliases, skip invalid IP
                     for (i in 1 until lineParts.size) {
                         val hostname = lineParts[i]
-                        val hostnameLower = hostname.toLowerCase(Locale.ENGLISH)
+                        val hostnameLower = hostname.lowercase(Locale.ENGLISH)
                         val address = InetAddress.getByAddress(hostname, ipBytes)
                         if (address is Inet4Address) {
                             val previous = ipv4Entries.put(hostnameLower, address)

@@ -7,6 +7,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.security.AccessController
 import java.security.PrivilegedAction
+import java.util.*
 
 /**
  * Network Utilities. MAC, IP, NameSpace, etc
@@ -31,7 +32,7 @@ internal object Common {
             }
         } catch (ignored: java.lang.Exception) {
             "linux"
-        }.toLowerCase()
+        }.lowercase(Locale.getDefault())
 
         if (osName.startsWith("mac") || osName.startsWith("darwin")) {
             OS_LINUX = false
@@ -56,7 +57,7 @@ internal object Common {
 
     fun getBoolean(property: String, defaultValue: Boolean): Boolean {
         var value: String = System.getProperty(property, defaultValue.toString()) ?: return defaultValue
-        value = value.trim().toLowerCase()
+        value = value.trim().lowercase(Locale.getDefault())
 
         if (value.isEmpty()) {
             return defaultValue
@@ -71,29 +72,29 @@ internal object Common {
         else defaultValue
     }
 
-    private val HEX2B: IntArray = IntArray('f'.toInt()+1).apply {
-        set('0'.toInt(), 0)
-        set('1'.toInt(), 1)
-        set('2'.toInt(), 2)
-        set('3'.toInt(), 3)
-        set('4'.toInt(), 4)
-        set('5'.toInt(), 5)
-        set('6'.toInt(), 6)
-        set('7'.toInt(), 7)
-        set('8'.toInt(), 8)
-        set('9'.toInt(), 9)
-        set('A'.toInt(), 10)
-        set('B'.toInt(), 11)
-        set('C'.toInt(), 12)
-        set('D'.toInt(), 13)
-        set('E'.toInt(), 14)
-        set('F'.toInt(), 15)
-        set('a'.toInt(), 10)
-        set('b'.toInt(), 11)
-        set('c'.toInt(), 12)
-        set('d'.toInt(), 13)
-        set('e'.toInt(), 14)
-        set('f'.toInt(), 15)
+    private val HEX2B: IntArray = IntArray('f'.code + 1).apply {
+        set('0'.code, 0)
+        set('1'.code, 1)
+        set('2'.code, 2)
+        set('3'.code, 3)
+        set('4'.code, 4)
+        set('5'.code, 5)
+        set('6'.code, 6)
+        set('7'.code, 7)
+        set('8'.code, 8)
+        set('9'.code, 9)
+        set('A'.code, 10)
+        set('B'.code, 11)
+        set('C'.code, 12)
+        set('D'.code, 13)
+        set('E'.code, 14)
+        set('F'.code, 15)
+        set('a'.code, 10)
+        set('b'.code, 11)
+        set('c'.code, 12)
+        set('d'.code, 13)
+        set('e'.code, 14)
+        set('f'.code, 15)
     }
 
     /**
@@ -108,7 +109,7 @@ internal object Common {
     fun decodeHexNibble(c: Char): Int {
         // Character.digit() is not used here, as it addresses a larger
         // set of characters (both ASCII and full-width latin letters).
-        val index = c.toInt()
+        val index = c.code
 
         return try {
             HEX2B[index]

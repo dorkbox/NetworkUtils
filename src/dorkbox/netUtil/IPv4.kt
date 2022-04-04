@@ -19,7 +19,11 @@ package dorkbox.netUtil
 
 import java.io.IOException
 import java.io.Writer
-import java.net.*
+import java.net.Inet4Address
+import java.net.InetAddress
+import java.net.NetworkInterface
+import java.net.SocketException
+import java.net.UnknownHostException
 import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.pow
@@ -783,11 +787,11 @@ object IPv4 {
     @Throws(Exception::class)
     fun writeString(ipAddress: Int, writer: Writer) {
         writer.write((ipAddress shr 24 and 0xFF).toString())
-        writer.write('.'.toInt())
+        writer.write('.'.code)
         writer.write((ipAddress shr 16 and 0xFF).toString())
-        writer.write('.'.toInt())
+        writer.write('.'.code)
         writer.write((ipAddress shr 8 and 0xFF).toString())
-        writer.write('.'.toInt())
+        writer.write('.'.code)
         writer.write((ipAddress and 0xFF).toString())
     }
 

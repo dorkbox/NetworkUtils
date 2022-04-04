@@ -58,6 +58,6 @@ object DefaultHostsFileResolver {
     }
 
     private fun normalize(inetHost: String): String {
-        return inetHost.toLowerCase(Locale.ENGLISH)
+        return inetHost.lowercase(Locale.ENGLISH)
     }
 }
