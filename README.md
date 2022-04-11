@@ -21,7 +21,7 @@ Maven Info
     <dependency>
       <groupId>com.dorkbox</groupId>
       <artifactId>NetworkUtils</artifactId>
-      <version>2.10</version>
+      <version>2.11</version>
     </dependency>
 </dependencies>
 ```
@@ -30,7 +30,7 @@ Gradle Info
 ```
 dependencies {
     ...
-    implementation("com.dorkbox:NetworkUtils:2.10")
+    implementation("com.dorkbox:NetworkUtils:2.11")
 }
 ```
 
