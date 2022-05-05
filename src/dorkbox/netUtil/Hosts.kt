@@ -50,7 +50,7 @@ object Hosts {
                         }
                     }
                 }
-            }catch (ignored: Exception) {
+            } catch (ignored: Exception) {
             }
         }
 
@@ -66,6 +66,7 @@ object Hosts {
             hostName = "localhost"
         }
 
-        hostName
+        // there can be extra new-line characters which we do not want
+        hostName.trim()
     }
 }
