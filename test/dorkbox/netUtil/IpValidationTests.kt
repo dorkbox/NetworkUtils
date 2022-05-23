@@ -16,8 +16,11 @@
 package dorkbox.netUtil
 
 import dorkbox.util.Sys
-import org.junit.Assert
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.net.Inet6Address
 import java.net.InetAddress
@@ -572,8 +575,8 @@ class IpValidationTests {
             assertEquals(message, expected, if (actual == null) null else hex(actual))
         }
 
-        private fun hex(value: ByteArray): String {
-            return Sys.bytesToHex(value).toLowerCase()
+        private fun hex(byteArray: ByteArray): String {
+            return Sys.bytesToHex(byteArray).toLowerCase()
         }
 
         private fun unhex(value: String?): ByteArray? {
@@ -583,79 +586,79 @@ class IpValidationTests {
 
     @Test
     fun testAddressLength() {
-        Assert.assertEquals(4, IPv4.length)
-        Assert.assertEquals(16, IPv6.length)
+        assertEquals(4, IPv4.length)
+        assertEquals(16, IPv6.length)
     }
 
     @Test
     fun testFamilyOf() {
-        Assert.assertTrue(IPv4.isFamily(InetAddress.getByName("192.168.0.1")))
-        Assert.assertTrue(IPv6.isFamily(InetAddress.getByName("1:2:3:4:5:6:7:8")))
+        assertTrue(IPv4.isFamily(InetAddress.getByName("192.168.0.1")))
+        assertTrue(IPv6.isFamily(InetAddress.getByName("1:2:3:4:5:6:7:8")))
     }
 
     @Test
     fun testLocalhost() {
-        Assert.assertNotNull(IP.LOCALHOST)
+        assertNotNull(IP.LOCALHOST)
     }
 
     @Test
     fun testLoopback() {
-        Assert.assertNotNull(IP.LOOPBACK_IF)
+        assertNotNull(IP.LOOPBACK_IF)
     }
 
     @Test
     fun testIsValidIpV4Address() {
         for (host in validIpV4Hosts.keys) {
-            Assert.assertTrue(host, IPv4.isValid(host))
+            assertTrue(host, IPv4.isValid(host))
         }
         for (host in invalidIpV4Hosts.keys) {
-            Assert.assertFalse(host, IPv4.isValid(host))
+            assertFalse(host, IPv4.isValid(host))
         }
     }
 
     @Test
     fun testIsValidIpV6Address() {
         for (host in validIpV6Hosts.keys) {
-            Assert.assertTrue(host, IPv6.isValid(host))
+            assertTrue(host, IPv6.isValid(host))
             if (host[0] != '[' && !host.contains("%")) {
-                Assert.assertNotNull(host, IPv6.toAddress(host, true))
+                assertNotNull(host, IPv6.toAddress(host, true))
                 var hostMod = "[$host]"
-                Assert.assertTrue(hostMod, IPv6.isValid(hostMod))
+                assertTrue(hostMod, IPv6.isValid(hostMod))
                 hostMod = "$host%"
-                Assert.assertTrue(hostMod, IPv6.isValid(hostMod))
+                assertTrue(hostMod, IPv6.isValid(hostMod))
                 hostMod = "$host%eth1"
-                Assert.assertTrue(hostMod, IPv6.isValid(hostMod))
+                assertTrue(hostMod, IPv6.isValid(hostMod))
                 hostMod = "[$host%]"
-                Assert.assertTrue(hostMod, IPv6.isValid(hostMod))
+                assertTrue(hostMod, IPv6.isValid(hostMod))
                 hostMod = "[$host%1]"
-                Assert.assertTrue(hostMod, IPv6.isValid(hostMod))
+                assertTrue(hostMod, IPv6.isValid(hostMod))
                 hostMod = "[$host]%"
-                Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+                assertFalse(hostMod, IPv6.isValid(hostMod))
                 hostMod = "[$host]%1"
-                Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+                assertFalse(hostMod, IPv6.isValid(hostMod))
             }
         }
         for (host in invalidIpV6Hosts.keys) {
-            Assert.assertFalse(host, IPv6.isValid(host))
-            Assert.assertNull(host, IPv6.toAddress(host))
+            assertFalse(host, IPv6.isValid(host))
+            assertNull(host, IPv6.toAddress(host))
             var hostMod = "[$host]"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "$host%"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "$host%eth1"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "[$host%]"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "[$host%1]"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "[$host]%"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "[$host]%1"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "$host]"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
             hostMod = "[$host"
-            Assert.assertFalse(hostMod, IPv6.isValid(hostMod))
+            assertFalse(hostMod, IPv6.isValid(hostMod))
         }
     }
 
@@ -707,7 +710,7 @@ class IpValidationTests {
     fun testIpv4MappedIp6GetByName() {
         for ((srcIp, dstIp) in ipv4MappedToIPv6AddressStrings) {
             val inet6Address: Inet6Address? = IPv6.toAddress(srcIp, true)
-            Assert.assertNotNull("$srcIp, $dstIp", inet6Address)
+            assertNotNull("$srcIp, $dstIp", inet6Address)
             assertEquals(srcIp, dstIp, IPv6.toString(inet6Address!!, true))
         }
     }
@@ -715,10 +718,10 @@ class IpValidationTests {
     @Test
     fun testInvalidIpv4MappedIp6GetByName() {
         for (host in invalidIpV4Hosts.keys) {
-            Assert.assertNull(host, IPv4.toAddress(host))
+            assertNull(host, IPv4.toAddress(host))
         }
         for (host in invalidIpV6Hosts.keys) {
-            Assert.assertNull(host, IPv6.toAddress(host, true))
+            assertNull(host, IPv6.toAddress(host, true))
         }
     }
 
@@ -751,7 +754,7 @@ class IpValidationTests {
             println(host)
             val ip = IPv4.toIntUnsafe(host)
             val ipString = IPv4.toString(ip)
-            Assert.assertEquals(host, ipString)
+            assertEquals(host, ipString)
         }
     }
 
