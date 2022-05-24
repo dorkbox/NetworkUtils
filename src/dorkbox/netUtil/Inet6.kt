@@ -41,7 +41,7 @@ object Inet6 {
      * @return [Inet6Address] representation of the [ip] or [null] if not a valid IP address.
      */
     fun toAddress(ip: String, ipv4Mapped: Boolean = true): Inet6Address? {
-        return if (IPv6.isValid(ip)) {
+        return if (IPv6.isValid(ip) || (ipv4Mapped && IPv4.isValid(ip))) {
             IPv6.toAddress(ip, ipv4Mapped)
         } else {
             // maybe this is a host name and not an IP address?
