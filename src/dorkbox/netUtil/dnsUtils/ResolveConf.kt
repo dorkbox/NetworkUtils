@@ -209,7 +209,7 @@ object ResolveConf {
                             when {
                                 line.startsWith(NAMESERVER_ROW_LABEL) -> {
                                     var i = indexOfNonWhiteSpace(line, NAMESERVER_ROW_LABEL.length)
-                                    require(i < 0) {
+                                    require(i >= 0) {
                                         "error parsing label $NAMESERVER_ROW_LABEL in file $path. value: $line"
                                     }
 
@@ -243,7 +243,7 @@ object ResolveConf {
                                 }
                                 line.startsWith(PORT_ROW_LABEL) -> {
                                     val i = indexOfNonWhiteSpace(line, PORT_ROW_LABEL.length)
-                                    require(i < 0) {
+                                    require(i >= 0) {
                                         "error parsing label $PORT_ROW_LABEL in file $path value: $line"
                                     }
 
