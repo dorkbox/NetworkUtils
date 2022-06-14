@@ -221,7 +221,7 @@ object IP {
                 return it.localAddress
             }
         }.onFailure {
-            Common.logger.error("Unable to determine outbound traffic local address. Using alternate logic instead.", it)
+            logger.error("Unable to determine outbound traffic local address. Using alternate logic instead.", it)
         }
 
         // there was an error doing this! (it's possible that outbound traffic is not allowed

@@ -19,7 +19,6 @@ package dorkbox.netUtil.ping
 import dorkbox.netUtil.Common
 import dorkbox.netUtil.IP
 import java.time.Duration
-import java.time.temporal.ChronoUnit
 import java.util.regex.*
 
 internal object PingResultBuilder {
@@ -30,10 +29,10 @@ internal object PingResultBuilder {
         val maxRTT = matcher.group(3).toDouble()
         val mdevRTT = matcher.group(4).toDouble()
 
-        result.minRoundTripTime = Duration.ofNanos((1000 * 1000 * minRTT).toLong())
-        result.avgRoundTripTime = Duration.ofNanos((1000 * 1000 * avgRTT).toLong())
-        result.maxRoundTripTime = Duration.ofNanos((1000 * 1000 * maxRTT).toLong())
-        result.mdevRoundTripTime = Duration.ofNanos((1000 * 1000 * mdevRTT).toLong())
+        result.minRoundTripTime = Duration.ofMillis(minRTT.toLong())
+        result.avgRoundTripTime = Duration.ofMillis(avgRTT.toLong())
+        result.maxRoundTripTime = Duration.ofMillis(maxRTT.toLong())
+        result.mdevRoundTripTime = Duration.ofMillis(mdevRTT.toLong())
 
         result
     }
@@ -44,6 +43,11 @@ internal object PingResultBuilder {
                 Common.OS_MAC -> {
                     listOf(
                         /* BSD Ping (MacOS) */
+                        ResultParser.of("PING (.*) \\((.*?)\\): (.*) data bytes") { result, matcher ->
+                            result.host = IP.lanAddress().hostAddress // note: this is REALLY the host used for lan traffic
+                            result.ip = matcher.group(1)
+                            result
+                        },
                         ResultParser.of("(.*) packets transmitted, (.*) packets received, (.*)% packet loss") { result, matcher ->
                             val transmittedPackets: Int = matcher.group(1).toInt()
                             result.transmittedPackets = transmittedPackets
@@ -96,7 +100,7 @@ internal object PingResultBuilder {
                             val host: String = matcher.group(2)
                             val icmpSeq: Int = matcher.group(3).toInt()
                             val ttl: Int = matcher.group(4).toInt()
-                            val time = Duration.ofNanos(1000 * 1000 * matcher.group(5).toLong())
+                            val time = Duration.ofMillis(matcher.group(5).toLong())
                             val response = PingResult.Response(bytes, host, icmpSeq, ttl, time)
 
                             result.responses.add(response)
@@ -122,7 +126,7 @@ internal object PingResultBuilder {
                             val packetLoss: Double = 0.01 * Integer.valueOf(matcher.group(3))
                             result.packetLoss = packetLoss
 
-                            val time = Duration.of(matcher.group(4).toLong(), ChronoUnit.MILLIS)
+                            val time = Duration.ofMillis(matcher.group(4).toLong())
                             result.time = time
 
                             result

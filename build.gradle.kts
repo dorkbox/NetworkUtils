@@ -80,6 +80,35 @@ licensing {
             url("http://archive.apache.org/dist/harmony/")
             note("This product contains a modified portion of 'Apache Harmony', an open source Java SE")
         }
+        extra("Apache HTTP Utils", License.APACHE_2) {
+            copyright(2010)
+            author("The Apache Software Foundation")
+            url("http://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/httpclient5/src/main/java/org/apache/hc/client5/http/psl/")
+            note("This product contains a modified portion of 'PublicSuffixDomainFilter.java'")
+        }
+    }
+}
+
+//kotlin {
+//    sourceSets {
+//        main {
+//            resources.apply {
+//                srcDirs("dorkbox/netUtil/dnsUtils/effective_tld_names.dat")
+//            }
+//        }
+//    }
+//}
+
+sourceSets {
+    main {
+        java {
+            resources {
+                setSrcDirs(listOf("src"))
+                include(
+                    "dorkbox/netUtil/dnsUtils/effective_tld_names.dat"
+                )
+            }
+        }
     }
 }
 
@@ -110,7 +139,6 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha4")
-    testImplementation("com.dorkbox:Utilities:1.25")
 }
 
 publishToSonatype {

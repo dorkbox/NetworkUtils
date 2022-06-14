@@ -15,7 +15,7 @@
  */
 package dorkbox.netUtil
 
-import dorkbox.util.Sys
+import dorkbox.netUtil.ping.Ping
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -572,15 +572,36 @@ class IpValidationTests {
 
 
         private fun assertHexDumpEquals(expected: String?, actual: ByteArray?, message: String) {
-            assertEquals(message, expected, if (actual == null) null else hex(actual))
+            assertEquals(message, expected, actual?.toHex())
         }
 
-        private fun hex(byteArray: ByteArray): String {
-            return Sys.bytesToHex(byteArray).toLowerCase()
+        private val hexChars = "0123456789abcdef".toCharArray()
+        private fun ByteArray.toHex(): String {
+            val hex = CharArray(2 * this.size)
+            this.forEachIndexed { i, byte ->
+                val unsigned = 0xff and byte.toInt()
+                hex[2 * i] = hexChars[unsigned / 16]
+                hex[2 * i + 1] = hexChars[unsigned % 16]
+            }
+
+            return hex.joinToString("")
         }
 
-        private fun unhex(value: String?): ByteArray? {
-            return if (value != null) Sys.hexToBytes(value) else null
+        private fun String.decodeHex(): ByteArray {
+            check(length % 2 == 0) { "Must have an even length" }
+
+            val bytes = ByteArray(length / 2)
+
+            var i = 0
+            while (i < length) {
+                // using left shift operator on every character
+                val a = Character.digit(this[i], 16) shl 4
+                val b = Character.digit(this[i+1], 16)
+                bytes[i / 2] = (a + b).toByte()
+                i += 2
+            }
+
+            return bytes
         }
     }
 
@@ -702,7 +723,7 @@ class IpValidationTests {
     @Throws(UnknownHostException::class)
     fun testIp4AddressToString() {
         for ((key, value) in validIpV4Hosts) {
-            assertEquals(key, IP.toString(InetAddress.getByAddress(unhex(value))))
+            assertEquals(key, IP.toString(InetAddress.getByAddress(value.decodeHex())))
         }
     }
 
@@ -737,15 +758,14 @@ class IpValidationTests {
     @Throws(UnknownHostException::class)
     fun testIp4SocketAddressToString() {
         for ((key, value) in validIpV4Hosts) {
-            assertEquals("$key:9999", IP.toString(InetSocketAddress(InetAddress.getByAddress(unhex(value)), 9999)))
+            assertEquals("$key:9999", IP.toString(InetSocketAddress(InetAddress.getByAddress(value.decodeHex()), 9999)))
         }
     }
-//
-//    @Test
-//    fun testPing() {
-//        println(Ping().run())
-////        println(Executor().command("ping 1.1.1.1").readOutput().startAsShellBlocking().output.utf8())
-//    }
+
+    @Test
+    fun testPing() {
+        println(Ping.host("1.1.1.1").run())
+    }
 
 
     @Test
