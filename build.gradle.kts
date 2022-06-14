@@ -89,29 +89,6 @@ licensing {
     }
 }
 
-//kotlin {
-//    sourceSets {
-//        main {
-//            resources.apply {
-//                srcDirs("dorkbox/netUtil/dnsUtils/effective_tld_names.dat")
-//            }
-//        }
-//    }
-//}
-
-sourceSets {
-    main {
-        java {
-            resources {
-                setSrcDirs(listOf("src"))
-                include(
-                    "dorkbox/netUtil/dnsUtils/effective_tld_names.dat"
-                )
-            }
-        }
-    }
-}
-
 tasks.jar.get().apply {
     manifest {
         // https://docs.oracle.com/javase/tutorial/deployment/jar/packageman.html
