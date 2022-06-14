@@ -19,6 +19,13 @@
          The Apache Software Foundation
        This product contains a modified portion of 'Apache Harmony', an open source Java SE
 
+     - Apache HTTP Utils - 
+       [The Apache Software License, Version 2.0]
+       http://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/httpclient5/src/main/java/org/apache/hc/client5/http/psl/
+       Copyright 2010
+         The Apache Software Foundation
+       This product contains a modified portion of 'PublicSuffixDomainFilter.java'
+
      - SLF4J - Simple facade or abstraction for various logging frameworks
        [MIT License]
        http://www.slf4j.org
