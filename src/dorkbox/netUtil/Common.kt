@@ -30,7 +30,7 @@ internal object Common {
     /**
      * Gets the version number.
      */
-    const val version = "2.15"
+    const val version = "2.16"
 
     val OS_LINUX: Boolean
     val OS_WINDOWS: Boolean
