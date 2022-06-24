@@ -107,7 +107,7 @@ tasks.jar.get().apply {
 dependencies {
     api("org.slf4j:slf4j-api:1.8.0-beta4")
 
-    api("com.dorkbox:Executor:3.9")
+    api("com.dorkbox:Executor:3.11")
     api("com.dorkbox:Updates:1.1")
 
     val jnaVersion = "5.10.0"
