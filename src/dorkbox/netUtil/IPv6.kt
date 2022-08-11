@@ -135,7 +135,7 @@ object IPv6 {
     }
 
     /**
-     * The [Inet4Address] that represents the IPv4 wildcard address '0.0.0.0'
+     * The [Inet4Address] that represents the IPv6 wildcard address '0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0'
      */
     val WILDCARD: Inet6Address by lazy {
         // Create IPv6 address, this will ALWAYS work
