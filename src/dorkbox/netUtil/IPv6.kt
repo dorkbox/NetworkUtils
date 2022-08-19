@@ -135,11 +135,25 @@ object IPv6 {
     }
 
     /**
+     * The [String] that represents the IPv6 loopback address '::1'
+     */
+    val LOCALHOST_STRING by lazy {
+        toString(LOCALHOST)
+    }
+
+    /**
      * The [Inet4Address] that represents the IPv6 wildcard address '0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0'
      */
     val WILDCARD: Inet6Address by lazy {
         // Create IPv6 address, this will ALWAYS work
         InetAddress.getByAddress(null, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) as Inet6Address
+    }
+
+    /**
+     * The [String] that represents the IPv6 wildcard address '0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0'
+     */
+    val WILDCARD_STRING by lazy {
+        toString(WILDCARD)
     }
 
     /**

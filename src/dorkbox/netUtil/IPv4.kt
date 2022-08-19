@@ -99,11 +99,25 @@ object IPv4 {
     }
 
     /**
+     * The [String] that represents the IPv4 loopback address '127.0.0.1'
+     */
+    val LOCALHOST_STRING by lazy {
+        toString(LOCALHOST)
+    }
+
+    /**
      * The [Inet4Address] that represents the IPv4 wildcard address '0.0.0.0'
      */
     val WILDCARD: Inet4Address by lazy {
         // Create IPv4 address, this will ALWAYS work
         InetAddress.getByAddress(null, byteArrayOf(0, 0, 0, 0)) as Inet4Address
+    }
+
+    /**
+     * The [String] that represents the IPv4 wildcard address '0.0.0.0'
+     */
+    val WILDCARD_STRING by lazy {
+        toString(WILDCARD)
     }
 
     /**
