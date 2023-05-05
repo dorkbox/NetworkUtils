@@ -217,7 +217,7 @@ object IP {
         // it's MUCH easier to see if open a connection to 1.1.1.1 and get the interface this traffic was on, and use that interface IP address
         runCatching {
             Socket().use {
-                it.connect(InetSocketAddress("1.1.1.1", 80))
+                it.connect(InetSocketAddress("1.1.1.1", 80), 100)
                 return it.localAddress
             }
         }.onFailure {
