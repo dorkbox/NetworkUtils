@@ -19,16 +19,8 @@ package dorkbox.netUtil
 import dorkbox.netUtil.Common.logger
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.net.Inet4Address
-import java.net.Inet6Address
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.NetworkInterface
-import java.net.Socket
-import java.net.SocketException
-import java.net.URL
-import java.net.UnknownHostException
-import java.util.regex.*
+import java.net.*
+import java.util.regex.Pattern
 
 /**
  * A class that holds a number of network-related constants, also from:
@@ -221,7 +213,7 @@ object IP {
                 return it.localAddress
             }
         }.onFailure {
-            logger.error("Unable to determine outbound traffic local address. Using alternate logic instead.", it)
+            logger.error("Unable to determine outbound traffic local address (${it.javaClass.simpleName}. Using alternate logic instead.")
         }
 
         // there was an error doing this! (it's possible that outbound traffic is not allowed
