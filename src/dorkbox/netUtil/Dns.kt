@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2023 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,22 @@ import java.net.Inet6Address
 import java.net.InetAddress
 import java.net.InetSocketAddress
 
+/**
+ * Domain types differentiated by Mozilla Public Suffix List.
+ *
+ * @since 4.5
+ */
+enum class DomainType {
+    UNKNOWN, ICANN, PRIVATE
+}
+
+
+data class PublicSuffixList(val type: DomainType, val rules: Set<String>, val exceptions: Set<String>, val wildcards: Set<String>) {
+    constructor(rules: Set<String>, exceptions: Set<String>, wildcards: Set<String>) : this(DomainType.UNKNOWN, rules, exceptions, wildcards)
+}
 
 object Dns {
+
     /**
      * Gets the version number.
      */
@@ -38,8 +52,7 @@ object Dns {
 
     const val DEFAULT_SEARCH_DOMAIN = ""
 
-    private val exceptions = HashSet<String>()
-    private val suffixes = HashSet<String>()
+    private var listTypes: MutableList<PublicSuffixList>
 
     /**
      * @throws IOException if the DNS resolve.conf file cannot be read
@@ -129,12 +142,6 @@ object Dns {
          *
          * https://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat?raw=1
          * which is...
-         * https://publicsuffix.org/list/effective_tld_names.dat
-         *
-         *
-         * also
-         *
-         *
          * https://publicsuffix.org/list/public_suffix_list.dat
          *
          *
@@ -145,31 +152,98 @@ object Dns {
          * http://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/httpclient5/src/main/java/org/apache/hc/client5/http/psl/
          */
 
+        this.listTypes = mutableListOf()
+        var domainType: DomainType? = null
+
+        var exceptions: MutableSet<String>? = null
+        var rules: MutableSet<String>? = null
+        var wildcards: MutableSet<String>? = null
+
         // now load this file into memory, so it's faster to process.
-        val tldResource = Dns.javaClass.getResourceAsStream("/effective_tld_names.dat")
-        tldResource.bufferedReader().useLines { lines ->
+        val tldResource = Dns.javaClass.getResourceAsStream("/public_suffix_list.dat")
+
+        tldResource?.bufferedReader()?.useLines { lines ->
             lines.forEach { line ->
-                var line = line
+                if (line.isEmpty()) {
+                    return@forEach
+                }
 
-                // entire lines can also be commented using //
-                if (line.isNotEmpty() && !line.startsWith("//")) {
-
-                    if (line.startsWith(".")) {
-                        line = line.substring(1) // A leading dot is optional
-                    }
-
-                    // An exclamation mark (!) at the start of a rule marks an exception
-                    // to a previous wildcard rule
-                    val isException = line.startsWith("!")
-                    if (isException) {
-                        line = line.substring(1)
-                    }
-
-                    if (isException) {
-                        exceptions.add(line)
+                if (line.startsWith("//")) {
+                    if (domainType == null) {
+                        if (line.contains("===BEGIN ICANN DOMAINS===")) {
+                            domainType = DomainType.ICANN
+                        } else if (line.contains("===BEGIN PRIVATE DOMAINS===")) {
+                            domainType = DomainType.PRIVATE
+                        }
                     } else {
-                        suffixes.add(line)
+                        if (line.contains("===END ICANN DOMAINS===") || line.contains("===END PRIVATE DOMAINS===")) {
+                            if (rules == null) {
+                                rules = mutableSetOf()
+                            }
+                            if (exceptions == null) {
+                                exceptions = mutableSetOf()
+                            }
+                            if (wildcards == null) {
+                                wildcards = mutableSetOf()
+                            }
+
+                            listTypes.add(PublicSuffixList(domainType!!, rules!!, exceptions!!, wildcards!!))
+
+                            domainType = null
+                            rules = null
+                            exceptions = null
+                            wildcards = null
+                        }
                     }
+
+                    //entire lines can also be commented using //
+                    return@forEach
+                }
+
+
+                if (domainType == null) {
+                    // only parse data from well known sections
+                    return@forEach
+                }
+
+                @Suppress("NAME_SHADOWING")
+                var line = line
+                if (line.startsWith(".")) {
+                    line = line.substring(1) // A leading dot is optional
+                }
+
+                // An exclamation mark (!) at the start of a rule marks an exception to a previous wildcard rule
+                if (line.startsWith("!")) {
+                    // *.kawasaki.jp
+                    //!city.kawasaki.jp
+                    line = line.substring(1)
+
+                    if (exceptions == null) {
+                        exceptions = mutableSetOf()
+                    }
+
+                    exceptions!!.add(line)
+                } else if (line.startsWith("*")) {
+                    // *.kawasaki.jp
+                    // motors.kawasaki.jp IS A TLD
+                    // kawasaki.jp IS NOT a TLD
+                    // city.kawasaki.jp IS NOT a TLD  (!city.kawasaki.jp is a rule)
+                    line = line.substring(2)
+
+                    if (wildcards == null) {
+                        wildcards = mutableSetOf()
+                    }
+
+
+                    wildcards!!.add(line)
+                } else {
+                    // this is a normal rule
+
+                    if (rules == null) {
+                        rules = mutableSetOf()
+                    }
+
+                    rules!!.add(line)
                 }
             }
         }
@@ -186,6 +260,7 @@ object Dns {
      *
      * @return null (if there is no second level domain) or the SLD www.aa.com -> aa.com , or www.amazon.co.uk -> amazon.co.uk
      */
+    @Suppress("NAME_SHADOWING")
     fun extractSLD(domain: String): String? {
         var domain = domain
         var last = domain
@@ -244,6 +319,7 @@ object Dns {
     /**
      * Checks if the domain is a TLD.
      */
+    @Suppress("NAME_SHADOWING")
     fun isTLD(domain: String): Boolean {
         var domain = domain
         if (domain.startsWith(".")) {
@@ -254,21 +330,78 @@ object Dns {
         // Exceptions are ones that are not a TLD, but would match a pattern rule
         // e.g. bl.uk is not a TLD, but the rule *.uk means it is. Hence there is an exception rule
         // stating that bl.uk is not a TLD.
-        if (exceptions.contains(domain)) {
-            return false
+        listTypes.forEach { list ->
+            // exceptions always take priority
+            if (list.exceptions.contains(domain)) {
+                // exceptions list means that this is NOT a TLD, even though it looks like one
+                return false
+            }
+
+            if (list.rules.contains(domain)) {
+                // we have an explicit rule for this domain
+                return true
+            }
+
+            // Try patterns....
+            // *.kawasaki.jp
+            // motors.kawasaki.jp IS A TLD
+            // kawasaki.jp IS NOT a TLD
+            // city.kawasaki.jp IS NOT a TLD  (!city.kawasaki.jp is a rule)
+            val nextdot = domain.indexOf('.')
+            if (nextdot == -1) {
+                // there is no wildcard possibility
+                return false
+            }
+
+            return list.wildcards.contains("*" + domain.substring(nextdot))
         }
 
-        if (suffixes.contains(domain)) {
-            return true
+        return false
+    }
+
+    /**
+     * Checks if the domain is a TLD.
+     */
+    @Suppress("NAME_SHADOWING")
+    fun getDomainType(domain: String): DomainType {
+        var domain = domain
+        if (domain.startsWith(".")) {
+            domain = domain.substring(1)
         }
 
-        // Try patterns. ie *.jp means that boo.jp is a TLD
-        val nextdot = domain.indexOf('.')
-        if (nextdot == -1) {
-            return false
-        }
-        domain = "*" + domain.substring(nextdot)
+        // An exception rule takes priority over any other matching rule.
+        // Exceptions are ones that are not a TLD, but would match a pattern rule
+        // e.g. bl.uk is not a TLD, but the rule *.uk means it is. Hence there is an exception rule
+        // stating that bl.uk is not a TLD.
+        listTypes.forEach { list ->
+            // exceptions always take priority
+            if (list.exceptions.contains(domain)) {
+                // exceptions list means that this is NOT a TLD, even though it looks like one
+                return list.type  // false (This is not a TLD, and it's defined in the public suffixed list)
+            }
 
-        return suffixes.contains(domain)
+            if (list.rules.contains(domain)) {
+                // This is a TLD, and it's defined in the public suffixed list
+                return list.type
+            }
+
+            // Try patterns....
+            // *.kawasaki.jp
+            // motors.kawasaki.jp IS A TLD
+            // kawasaki.jp IS NOT a TLD
+            // city.kawasaki.jp IS NOT a TLD  (!city.kawasaki.jp is a rule)
+            val nextdot = domain.indexOf('.')
+            if (nextdot == -1) {
+                // not a tld, because it's not formatted correctly
+                return DomainType.UNKNOWN
+            }
+
+            val domain = "*" + domain.substring(nextdot)
+            if (list.wildcards.contains(domain)) {
+                return list.type
+            }
+        }
+
+        return DomainType.UNKNOWN
     }
 }
