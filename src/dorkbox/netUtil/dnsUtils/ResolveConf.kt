@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 dorkbox, llc
+ * Copyright 2023 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ object ResolveConf {
                         var nameServers = mutableListOf<InetSocketAddress>()
                         val nameServerDomains = mutableMapOf<String, List<InetSocketAddress>>()
 
-                        @Suppress("unused")
+                        @Suppress("UNUSED_VARIABLE")
                         var port = 53  // this is really used, it's just that the kotlin compiler doesn't notice
                         var domainName = Dns.DEFAULT_SEARCH_DOMAIN
                         var line0: String?
@@ -247,6 +247,7 @@ object ResolveConf {
                                         "error parsing label $PORT_ROW_LABEL in file $path value: $line"
                                     }
 
+                                    @Suppress("UNUSED_VALUE")
                                     port = line.substring(i).toInt()
                                 }
                             }
