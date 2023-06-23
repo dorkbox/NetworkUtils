@@ -155,13 +155,12 @@ object Dns {
         this.listTypes = mutableListOf()
         var domainType: DomainType? = null
 
-        var exceptions: MutableSet<String>? = null
-        var rules: MutableSet<String>? = null
-        var wildcards: MutableSet<String>? = null
+        var exceptions: MutableSet<String> = mutableSetOf()
+        var rules: MutableSet<String> = mutableSetOf()
+        var wildcards: MutableSet<String> = mutableSetOf()
 
         // now load this file into memory, so it's faster to process.
         val tldResource = Dns.javaClass.getResourceAsStream("/public_suffix_list.dat")
-
         tldResource?.bufferedReader()?.useLines { lines ->
             lines.forEach { line ->
                 if (line.isEmpty()) {
@@ -177,22 +176,12 @@ object Dns {
                         }
                     } else {
                         if (line.contains("===END ICANN DOMAINS===") || line.contains("===END PRIVATE DOMAINS===")) {
-                            if (rules == null) {
-                                rules = mutableSetOf()
-                            }
-                            if (exceptions == null) {
-                                exceptions = mutableSetOf()
-                            }
-                            if (wildcards == null) {
-                                wildcards = mutableSetOf()
-                            }
-
-                            listTypes.add(PublicSuffixList(domainType!!, rules!!, exceptions!!, wildcards!!))
+                            listTypes.add(PublicSuffixList(domainType!!, rules, exceptions, wildcards))
 
                             domainType = null
-                            rules = null
-                            exceptions = null
-                            wildcards = null
+                            rules = mutableSetOf()
+                            exceptions = mutableSetOf()
+                            wildcards = mutableSetOf()
                         }
                     }
 
@@ -217,33 +206,17 @@ object Dns {
                     // *.kawasaki.jp
                     //!city.kawasaki.jp
                     line = line.substring(1)
-
-                    if (exceptions == null) {
-                        exceptions = mutableSetOf()
-                    }
-
-                    exceptions!!.add(line)
+                    exceptions.add(line)
                 } else if (line.startsWith("*")) {
                     // *.kawasaki.jp
                     // motors.kawasaki.jp IS A TLD
                     // kawasaki.jp IS NOT a TLD
                     // city.kawasaki.jp IS NOT a TLD  (!city.kawasaki.jp is a rule)
                     line = line.substring(2)
-
-                    if (wildcards == null) {
-                        wildcards = mutableSetOf()
-                    }
-
-
-                    wildcards!!.add(line)
+                    wildcards.add(line)
                 } else {
                     // this is a normal rule
-
-                    if (rules == null) {
-                        rules = mutableSetOf()
-                    }
-
-                    rules!!.add(line)
+                    rules.add(line)
                 }
             }
         }
