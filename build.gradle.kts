@@ -27,12 +27,14 @@ gradle.startParameter.warningMode = WarningMode.All
 
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "3.3"
-    id("com.dorkbox.Licensing") version "2.17"
-    id("com.dorkbox.VersionUpdate") version "2.5"
-    id("com.dorkbox.GradlePublish") version "1.13"
+    id("com.dorkbox.GradleUtils") version "3.17"
+    id("com.dorkbox.Licensing") version "2.24"
+    id("com.dorkbox.VersionUpdate") version "2.8"
+    id("com.dorkbox.GradlePublish") version "1.18"
 
-    kotlin("jvm") version "1.7.20"
+    id("de.undercouch.download") version "5.4.0"
+
+    kotlin("jvm") version "1.8.0"
 }
 
 object Extras {
@@ -47,8 +49,6 @@ object Extras {
     const val vendor = "Dorkbox LLC"
     const val vendorUrl = "https://dorkbox.com/"
     const val url = "https://git.dorkbox.com/dorkbox/NetworkUtils"
-
-    val buildDate = Instant.now().toString()
 }
 
 ///////////////////////////////
@@ -56,9 +56,7 @@ object Extras {
 ///////////////////////////////
 GradleUtils.load("$projectDir/../../gradle.properties", Extras)
 GradleUtils.defaults()
-GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8) {
-    freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
-}
+GradleUtils.compileConfiguration(JavaVersion.VERSION_1_8)
 GradleUtils.jpms(JavaVersion.VERSION_1_9)
 
 licensing {
@@ -70,21 +68,32 @@ licensing {
         extra("Netty", License.APACHE_2) {
             copyright(2014)
             author("The Netty Project")
-            url("https://netty.io/")
+            url("https://netty.io")
             note("This product contains a modified portion of Netty Network Utils")
         }
 
         extra("Apache Harmony", License.APACHE_2) {
             copyright(2010)
             author("The Apache Software Foundation")
-            url("http://archive.apache.org/dist/harmony/")
+            url("https://archive.apache.org/dist/harmony/")
             note("This product contains a modified portion of 'Apache Harmony', an open source Java SE")
+        }
+        extra("Mozilla Public Suffix List", License.MOZILLA_2) {
+            copyright(2010)
+            author("The Apache Software Foundation")
+            url("https://publicsuffix.org/list/public_suffix_list.dat")
         }
         extra("Apache HTTP Utils", License.APACHE_2) {
             copyright(2010)
             author("The Apache Software Foundation")
-            url("http://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/httpclient5/src/main/java/org/apache/hc/client5/http/psl/")
+            url("https://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/httpclient5/src/main/java/org/apache/hc/client5/http/psl/")
             note("This product contains a modified portion of 'PublicSuffixDomainFilter.java'")
+        }
+        extra("UrlRewriteFilter", License.BSD_3) {
+            description("UrlRewriteFilter is a Java Web Filter for any J2EE compliant web application server")
+            url("https://github.com/paultuckey/urlrewritefilter")
+            copyright(2022)
+            author("Paul Tuckey")
         }
     }
 }
@@ -99,18 +108,29 @@ tasks.jar.get().apply {
         attributes["Specification-Vendor"] = Extras.vendor
 
         attributes["Implementation-Title"] = "${Extras.group}.${Extras.id}"
-        attributes["Implementation-Version"] = Extras.buildDate
+        attributes["Implementation-Version"] = GradleUtils.now()
         attributes["Implementation-Vendor"] = Extras.vendor
     }
 }
 
-dependencies {
-    api("org.slf4j:slf4j-api:2.0.4")
 
-    api("com.dorkbox:Executor:3.11")
+tasks.register<Download>("updateTldList") {
+    src("https://publicsuffix.org/list/public_suffix_list.dat")
+    dest(file("resources/public_suffix_list.dat")) // Destination file path
+    overwrite(true)
+
+    tasks.jar.get().finalizedBy(this)
+}
+
+
+dependencies {
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    api("org.slf4j:slf4j-api:2.0.7")
+
+    api("com.dorkbox:Executor:3.13")
     api("com.dorkbox:Updates:1.1")
 
-    val jnaVersion = "5.10.0"
+    val jnaVersion = "5.12.1"
     api("net.java.dev.jna:jna-jpms:$jnaVersion")
     api("net.java.dev.jna:jna-platform-jpms:$jnaVersion")
 
