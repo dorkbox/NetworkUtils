@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dorkbox, llc
+ * Copyright 2023 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import java.time.Instant
+import de.undercouch.gradle.tasks.download.Download
 
 ///////////////////////////////
 //////    PUBLISH TO SONATYPE / MAVEN CENTRAL
@@ -41,7 +41,7 @@ object Extras {
     // set for the project
     const val description = "Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)"
     const val group = "com.dorkbox"
-    const val version = "2.21"
+    const val version = "2.22"
 
     // set as project.ext
     const val name = "NetworkUtils"
