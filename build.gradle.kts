@@ -125,12 +125,13 @@ tasks.register<Download>("updateTldList") {
 
 dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
-    api("org.slf4j:slf4j-api:2.0.7")
+
+    implementation("org.slf4j:slf4j-api:2.0.7")
 
     api("com.dorkbox:Executor:3.13")
     api("com.dorkbox:Updates:1.1")
 
-    val jnaVersion = "5.12.1"
+    val jnaVersion = "5.13.0"
     api("net.java.dev.jna:jna-jpms:$jnaVersion")
     api("net.java.dev.jna:jna-platform-jpms:$jnaVersion")
 
