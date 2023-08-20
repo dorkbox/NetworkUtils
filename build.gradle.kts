@@ -41,7 +41,7 @@ object Extras {
     // set for the project
     const val description = "Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)"
     const val group = "com.dorkbox"
-    const val version = "2.22"
+    const val version = "2.23"
 
     // set as project.ext
     const val name = "NetworkUtils"
