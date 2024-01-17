@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 dorkbox, llc
+ * Copyright 2024 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@
  * ====================================================================
  *
  * https://www.talisman.org/%7Eerlkonig/misc/lunatech%5Ewhat-every-webdev-must-know-about-url-encoding/
+ * https://github.com/paultuckey/urlrewritefilter/
+ * https://github.com/paultuckey/urlrewritefilter/blob/main/src/main/java/org/tuckey/web/filters/urlrewrite/utils/URLDecoder.java
  */
 package dorkbox.netUtil.web
 

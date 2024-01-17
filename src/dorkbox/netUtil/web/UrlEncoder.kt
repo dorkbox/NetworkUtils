@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 dorkbox, llc
+ * Copyright 2024 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@
  * ====================================================================
  *
  * https://www.talisman.org/%7Eerlkonig/misc/lunatech%5Ewhat-every-webdev-must-know-about-url-encoding/
+ * https://github.com/paultuckey/urlrewritefilter/
+ * https://github.com/paultuckey/urlrewritefilter/blob/main/src/main/java/org/tuckey/web/filters/urlrewrite/utils/URLEncoder.java
  */
 
 package dorkbox.netUtil.web
@@ -220,24 +222,34 @@ object URLEncoder {
     }
 
     /**
-     * Encodes a string to be a valid path parameter URL, which means it can contain PCHAR* only (do not put the leading
-     * ";" or it will be escaped.
+     * Encodes a string to be a valid path parameter URL, which means it can contain APLHA, NUMBERS, and [: @ & = + $ ,] only
      *
      * @throws UnsupportedEncodingException
      */
     @Throws(UnsupportedEncodingException::class)
-    fun encodePathParam(pathParam: String, charset: Charset): String {
+    fun encode(pathParam: String, charset: Charset = Charsets.UTF_8): String {
         return encodePathSegment(pathParam, charset)
     }
 
     /**
-     * Encodes a string to be a valid path segment URL, which means it can contain PCHAR* only (do not put path
-     * parameters or they will be escaped.
+     * Encodes a string to be a valid path parameter URL, which means it can contain APLHA, NUMBERS, and [: @ & = + $ ,] only
+     * - do not put the leading ";" or it will be escaped.
      *
      * @throws UnsupportedEncodingException
      */
     @Throws(UnsupportedEncodingException::class)
-    fun encodePathSegment(pathSegment: String, charset: Charset): String {
+    fun encodePathParam(pathParam: String, charset: Charset = Charsets.UTF_8): String {
+        return encodePathSegment(pathParam, charset)
+    }
+
+    /**
+     * Encodes a string to be a valid path segment URL, which means it can contain APLHA, NUMBERS, and [: @ & = + $ ,] only
+     *  -do not put path parameters or they will be escaped
+     *
+     * @throws UnsupportedEncodingException
+     */
+    @Throws(UnsupportedEncodingException::class)
+    fun encodePathSegment(pathSegment: String, charset: Charset = Charsets.UTF_8): String {
         // start at *3 for the worst case when everything is %encoded on one byte
         val encoded = StringBuffer(pathSegment.length * 3)
         val toEncode = pathSegment.toCharArray()
