@@ -1,7 +1,7 @@
  - NetworkUtils - Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)
    [The Apache Software License, Version 2.0]
    https://git.dorkbox.com/dorkbox/NetworkUtils
-   Copyright 2024
+   Copyright 2026
      Dorkbox LLC
 
    Extra license information
@@ -41,19 +41,19 @@
      - kotlinx.coroutines - Library support for Kotlin coroutines with multiplatform support
        [The Apache Software License, Version 2.0]
        https://github.com/Kotlin/kotlinx.coroutines
-       Copyright 2024
+       Copyright 2026
          JetBrains s.r.o.
 
      - JNA - Simplified native library access for Java.
        [The Apache Software License, Version 2.0]
        https://github.com/twall/jna
-       Copyright 2024
+       Copyright 2026
          Timothy Wall
 
      - JNA-Platform - Mappings for a number of commonly used platform functions
        [The Apache Software License, Version 2.0]
        https://github.com/twall/jna
-       Copyright 2024
+       Copyright 2026
          Timothy Wall
 
      - Kotlin - 
@@ -67,7 +67,7 @@
      - SLF4J - Simple facade or abstraction for various logging frameworks
        [MIT License]
        https://www.slf4j.org
-       Copyright 2024
+       Copyright 2026
          QOS.ch
 
      - Executor - Shell, JVM, and SSH command execution on Linux, MacOS, or Windows for Java 8+
