@@ -1,4 +1,4 @@
- - NetworkUtils - Utilities for managing network configurations, IP/MAC address conversion, and ping (via OS native commands)
+ - NetworkUtils - Utilities for managing network configurations, IP/MAC address conversion, and ping
    [The Apache Software License, Version 2.0]
    https://git.dorkbox.com/dorkbox/NetworkUtils
    Copyright 2026

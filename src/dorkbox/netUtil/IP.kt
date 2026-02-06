@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 dorkbox, llc
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,7 @@ package dorkbox.netUtil
 import dorkbox.netUtil.Common.logger
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.net.Inet4Address
-import java.net.Inet6Address
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.NetworkInterface
-import java.net.Socket
-import java.net.SocketException
-import java.net.URL
-import java.net.UnknownHostException
+import java.net.*
 import java.util.regex.*
 
 /**
@@ -130,7 +122,7 @@ object IP {
             if (loopbackAddr == null) {
                 try {
                     if (NetworkInterface.getByInetAddress(IPv6.LOCALHOST) != null) {
-                        logger.debug("Using hard-coded IPv6 localhost address: ${IPv6.LOCALHOST}")
+                        logger.debug("Using hard-coded IPv6 localhost address: {}", IPv6.LOCALHOST)
 
                         loopbackAddr = IPv6.LOCALHOST
                     }
@@ -138,7 +130,7 @@ object IP {
 
                 }
                 if (loopbackAddr == null) {
-                    logger.debug("Using hard-coded IPv4 localhost address: ${IPv4.LOCALHOST}")
+                    logger.debug("Using hard-coded IPv4 localhost address: {}", IPv4.LOCALHOST)
                     loopbackAddr = IPv4.LOCALHOST
                 }
             }
@@ -285,7 +277,7 @@ object IP {
         // loop, since they won't always work.
         for (i in websites.indices) {
             try {
-                val autoIP = URL(websites[i])
+                val autoIP = URI(websites[i]).toURL()
                 val `in` = BufferedReader(InputStreamReader(autoIP.openStream()))
                 val response = `in`.readLine()
                     .trim { it <= ' ' }

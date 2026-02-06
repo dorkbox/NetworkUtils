@@ -30,10 +30,9 @@ import java.net.*
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
-import javax.naming.Context
-import javax.naming.NamingException
 import javax.naming.directory.DirContext
 import javax.naming.directory.InitialDirContext
+
 
 /**
  *
@@ -61,7 +60,7 @@ object ResolveConf {
         // - http://docs.oracle.com/javase/8/docs/technotes/guides/jndi/jndi-dns.html
         // - http://mail.openjdk.java.net/pipermail/net-dev/2017-March/010695.html
         val env = Hashtable<String, String>()
-        env[Context.INITIAL_CONTEXT_FACTORY] = "com.sun.jndi.dns.DnsContextFactory"
+        env["java.naming.factory.initial"] = "com.sun.jndi.dns.DnsContextFactory"
         env["java.naming.provider.url"] = "dns://"
         try {
             val ctx: DirContext = InitialDirContext(env)
@@ -77,7 +76,7 @@ object ResolveConf {
                     }
                 }
             }
-        } catch (ignore: NamingException) {
+        } catch (ignore: Exception) {
             // Will also try JNA/etc if this fails.
         }
 

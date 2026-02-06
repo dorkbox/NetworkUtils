@@ -14,5 +14,7 @@ module dorkbox.netutil {
     requires static com.sun.jna;
     requires static com.sun.jna.platform;
 
+    requires java.naming;
+
     requires static org.slf4j;
 }

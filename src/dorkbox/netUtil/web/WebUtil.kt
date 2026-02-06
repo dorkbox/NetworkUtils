@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 dorkbox, llc
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,11 @@ import dorkbox.netUtil.Dns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
+import java.net.*
 import java.net.URLDecoder
-import java.net.UnknownHostException
 import java.security.cert.X509Certificate
 import java.util.regex.*
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
+import javax.net.ssl.*
 
 @Suppress("unused")
 object WebUtil {
@@ -609,7 +603,7 @@ object WebUtil {
             }
 
             try {
-                base = URL(location)
+                base = URI(location).toURL()
                 with(base.openConnection() as HttpURLConnection) {
                     useCaches = false
                     instanceFollowRedirects = true
@@ -628,7 +622,7 @@ object WebUtil {
 
                             // logger.trace { "Response to '$url' redirected to '$location'" }
 
-                            next = URL(base, location) // Deal with relative URLs
+                            next = base.toURI().resolve(location).toURL() // Deal with relative URLs
                             location = next.toExternalForm()
 
                             // loop again with the new location

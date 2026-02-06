@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ object Iface {
 
                 Common.logger.debug("Found on '{}' possible addr '{}' : REMOVE", interfaceName, possibleAddr)
                 if (possibleAddr != null) {
-                    return possibleAddr!!
+                    return possibleAddr
                 }
             }
         }

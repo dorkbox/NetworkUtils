@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dorkbox, llc
+ * Copyright 2026 dorkbox, llc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package dorkbox.netUtil
 import org.slf4j.LoggerFactory
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.security.AccessController
-import java.security.PrivilegedAction
 import java.util.*
 
 /**
@@ -38,12 +36,7 @@ internal object Common {
 
     init {
         val osName: String = try {
-            if (System.getSecurityManager() == null) {
-                System.getProperty("os.name", "linux")
-            }
-            else {
-                AccessController.doPrivileged<String>(PrivilegedAction { System.getProperty("os.name", "linux") })
-            }
+            System.getProperty("os.name", "linux")
         } catch (ignored: java.lang.Exception) {
             "linux"
         }.lowercase(Locale.getDefault())
@@ -127,16 +120,16 @@ internal object Common {
 
         return try {
             HEX2B[index]
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             -1
         }
     }
 
     fun socketAddress(hostname: String, port: Int): InetSocketAddress {
-        return AccessController.doPrivileged(PrivilegedAction { InetSocketAddress(hostname, port) })
+        return InetSocketAddress(hostname, port)
     }
 
     fun socketAddress(host: InetAddress, port: Int): InetSocketAddress {
-        return AccessController.doPrivileged(PrivilegedAction { InetSocketAddress(host, port) })
+        return InetSocketAddress(host, port)
     }
 }
