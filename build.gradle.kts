@@ -21,12 +21,12 @@ gradle.startParameter.warningMode = WarningMode.All
 
 
 plugins {
-    id("com.dorkbox.GradleUtils") version "4.8"
+    id("com.dorkbox.GradleUtils") version "4.8.4"
     id("com.dorkbox.Licensing") version "3.1"
     id("com.dorkbox.VersionUpdate") version "3.2"
     id("com.dorkbox.GradlePublish") version "2.2"
 
-    id("de.undercouch.download") version "5.4.0"
+    id("de.undercouch.download") version "5.7.0"
 
     kotlin("jvm") version "2.3.0"
 }
@@ -37,7 +37,7 @@ GradleUtils.load {
 
     description = "Utilities for managing network configurations, IP/MAC address conversion, and ping"
     name = "NetworkUtils"
-    version = "2.24"
+    version = "3.0"
 
     vendor = "Dorkbox LLC"
     vendorUrl = "https://dorkbox.com/"
@@ -108,17 +108,17 @@ tasks.register<Download>("updateTldList") {
 
 
 dependencies {
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
-    implementation("org.slf4j:slf4j-api:2.0.7")
+    implementation("org.slf4j:slf4j-api:2.0.17")
 
-    api("com.dorkbox:Executor:3.13")
-    api("com.dorkbox:Updates:1.1")
+    api("com.dorkbox:Executor:4.0")
+    api("com.dorkbox:Updates:1.3")
 
-    val jnaVersion = "5.13.0"
+    val jnaVersion = "5.18.1"
     api("net.java.dev.jna:jna-jpms:$jnaVersion")
     api("net.java.dev.jna:jna-platform-jpms:$jnaVersion")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("ch.qos.logback:logback-classic:1.4.4")
+    testImplementation("ch.qos.logback:logback-classic:1.5.32")
 }
